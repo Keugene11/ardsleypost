@@ -65,6 +65,9 @@ export default async function HomePage() {
     <>
       <header className="mb-5">
         <h1 className="text-[26px] font-extrabold tracking-tight">Ardloop</h1>
+        <p className="text-[13px] text-text-muted mt-1 leading-snug">
+          Talk about events in Ardsley, ask for services such as tutors, babysitters, dogwalkers, and more from Ardsley students and alumni.
+        </p>
       </header>
       <Feed initialPosts={formattedPosts} userId={user?.id || null} />
       <Link
