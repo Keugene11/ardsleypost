@@ -40,7 +40,7 @@ export default async function HomePage() {
   return (
     <>
       <header className="mb-6">
-        <h1 className="text-[28px] font-extrabold tracking-tight">ardloop</h1>
+        <h1 className="text-[28px] font-extrabold tracking-tight">Ardloop</h1>
         <p className="text-[14px] text-text-muted">What&apos;s happening in Ardsley</p>
       </header>
       <Feed initialPosts={formattedPosts} userId={user?.id || null} />
