@@ -70,7 +70,11 @@ export default async function ProfilePage() {
         </div>
       </div>
 
-      <ProfileActions userId={user.id} bio={profile?.bio || ""} />
+      <ProfileActions
+        userId={user.id}
+        bio={profile?.bio || ""}
+        stripeOnboarded={profile?.stripe_onboarded || false}
+      />
 
       <div className="mt-6">
         <h3 className="text-[14px] font-semibold uppercase tracking-wide text-text-muted mb-3">

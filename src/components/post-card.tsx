@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, MessageCircle, Send, DollarSign } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { getCategoryLabel } from "@/lib/categories";
 import type { Post } from "@/types";
@@ -74,6 +74,15 @@ export function PostCard({
         <p className="text-[14px] leading-relaxed mb-3 whitespace-pre-wrap">
           {post.content}
         </p>
+
+        {post.price && (
+          <div className="flex items-center gap-1.5 mb-3 bg-green-50 border border-green-200 text-green-700 px-3 py-1.5 rounded-xl w-fit">
+            <DollarSign size={14} strokeWidth={2} />
+            <span className="text-[14px] font-bold">
+              {(post.price / 100).toFixed(2)}
+            </span>
+          </div>
+        )}
 
         {post.image_url && (
           <div className="mb-3 rounded-xl overflow-hidden">

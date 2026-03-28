@@ -31,8 +31,18 @@ export async function POST(request: Request) {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
-      const userId = session.metadata?.user_id;
 
+      // Handle marketplace purchase
+      if (session.metadata?.post_id) {
+        await supabaseAdmin
+          .from("purchases")
+          .update({ status: "completed" })
+          .eq("stripe_session_id", session.id);
+        break;
+      }
+
+      // Handle subscription purchase
+      const userId = session.metadata?.user_id;
       if (userId) {
         await supabaseAdmin
           .from("profiles")
@@ -53,6 +63,18 @@ export async function POST(request: Request) {
         .from("profiles")
         .update({ is_premium: false })
         .eq("stripe_customer_id", customerId);
+      break;
+    }
+
+    case "account.updated": {
+      // Handle Stripe Connect account updates
+      const account = event.data.object as Stripe.Account;
+      if (account.charges_enabled && account.payouts_enabled) {
+        await supabaseAdmin
+          .from("profiles")
+          .update({ stripe_onboarded: true })
+          .eq("stripe_account_id", account.id);
+      }
       break;
     }
   }

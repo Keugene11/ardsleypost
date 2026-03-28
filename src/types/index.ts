@@ -4,6 +4,8 @@ export interface Profile {
   full_name: string;
   avatar_url: string | null;
   bio: string | null;
+  stripe_account_id: string | null;
+  stripe_onboarded: boolean;
   created_at: string;
 }
 
@@ -13,6 +15,7 @@ export interface Post {
   content: string;
   category: PostCategory;
   image_url: string | null;
+  price: number | null;
   created_at: string;
   updated_at: string;
   author: Profile;
@@ -55,4 +58,15 @@ export interface Conversation {
   user: Profile;
   last_message: Message;
   unread_count: number;
+}
+
+export interface Purchase {
+  id: string;
+  post_id: string | null;
+  buyer_id: string;
+  seller_id: string;
+  amount: number;
+  commission: number;
+  status: string;
+  created_at: string;
 }

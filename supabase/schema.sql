@@ -12,6 +12,8 @@ create table public.profiles (
   avatar_url text,
   bio text,
   stripe_customer_id text,
+  stripe_account_id text,
+  stripe_onboarded boolean default false,
   is_premium boolean default false,
   created_at timestamptz default now() not null
 );
@@ -37,6 +39,7 @@ create table public.posts (
   content text not null,
   category text not null default 'general',
   image_url text,
+  price integer,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );
@@ -131,6 +134,33 @@ create policy "Receivers can update message read status"
 
 -- Enable realtime for messages
 alter publication supabase_realtime add table public.messages;
+
+-- Purchases table
+create table public.purchases (
+  id uuid default uuid_generate_v4() primary key,
+  post_id uuid references public.posts on delete set null,
+  buyer_id uuid references public.profiles on delete cascade not null,
+  seller_id uuid references public.profiles on delete cascade not null,
+  amount integer not null,
+  commission integer not null,
+  stripe_session_id text,
+  status text not null default 'pending',
+  created_at timestamptz default now() not null
+);
+
+alter table public.purchases enable row level security;
+
+create policy "Users can view their own purchases"
+  on public.purchases for select
+  using (auth.uid() = buyer_id or auth.uid() = seller_id);
+
+create policy "System can insert purchases"
+  on public.purchases for insert
+  with check (true);
+
+create policy "System can update purchases"
+  on public.purchases for update
+  using (true);
 
 -- Indexes for performance
 create index posts_author_id_idx on public.posts (author_id);

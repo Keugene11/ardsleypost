@@ -2,10 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, DollarSign } from "lucide-react";
 import { getCategoryLabel } from "@/lib/categories";
 import { timeAgo } from "@/lib/utils";
 import { CommentSection } from "@/components/comment-section";
+import { BuyButton } from "@/components/buy-button";
 
 export default async function PostPage({
   params,
@@ -98,6 +99,23 @@ export default async function PostPage({
               height={300}
               className="w-full object-cover"
             />
+          </div>
+        )}
+
+        {post.price && (
+          <div className="mt-4 flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+            <div className="flex items-center gap-1.5 text-green-700">
+              <DollarSign size={18} strokeWidth={2} />
+              <span className="text-[20px] font-bold">
+                {(post.price / 100).toFixed(2)}
+              </span>
+            </div>
+            {user && user.id !== post.author_id && (
+              <BuyButton
+                postId={id}
+                sellerOnboarded={post.author.stripe_onboarded}
+              />
+            )}
           </div>
         )}
       </article>
