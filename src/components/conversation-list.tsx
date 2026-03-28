@@ -24,19 +24,19 @@ export function ConversationList({
 }) {
   if (conversations.length === 0) {
     return (
-      <div className="text-center py-12 text-text-muted text-[14px]">
-        No messages yet. Tap the send icon on a post to start a conversation.
+      <div className="text-center py-16 text-text-muted text-[14px]">
+        No messages yet.
       </div>
     );
   }
 
   return (
-    <div className="space-y-2 stagger">
+    <div className="divide-y divide-border">
       {conversations.map((conv) => (
         <Link
           key={conv.user.id}
           href={`/messages/${conv.user.id}`}
-          className="flex items-center gap-3 bg-bg-card border border-border rounded-2xl px-4 py-3.5 hover:bg-bg-card-hover transition-colors press"
+          className="flex items-center gap-3 py-3.5 press"
         >
           {conv.user.avatar_url ? (
             <Image
@@ -44,28 +44,28 @@ export function ConversationList({
               alt={conv.user.full_name}
               width={44}
               height={44}
-              className="rounded-full"
+              className="rounded-full shrink-0"
             />
           ) : (
-            <div className="w-11 h-11 rounded-full bg-bg-input flex items-center justify-center text-[16px] font-semibold text-text-muted">
+            <div className="w-11 h-11 rounded-full bg-bg-input flex items-center justify-center text-[15px] font-semibold text-text-muted shrink-0">
               {conv.user.full_name?.[0] || "?"}
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <p className="text-[14px] font-semibold truncate">
+            <div className="flex items-baseline justify-between">
+              <p className={`text-[14px] truncate ${conv.unreadCount > 0 ? "font-bold" : "font-semibold"}`}>
                 {conv.user.full_name}
               </p>
               <span className="text-[11px] text-text-muted shrink-0 ml-2">
                 {timeAgo(conv.lastMessage.created_at)}
               </span>
             </div>
-            <p className="text-[13px] text-text-muted truncate">
+            <p className={`text-[13px] truncate mt-0.5 ${conv.unreadCount > 0 ? "text-text font-medium" : "text-text-muted"}`}>
               {conv.lastMessage.content}
             </p>
           </div>
           {conv.unreadCount > 0 && (
-            <span className="bg-[#1a1a1a] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0">
+            <span className="bg-[#1a1a1a] text-white text-[10px] font-bold min-w-[20px] h-5 rounded-full flex items-center justify-center shrink-0 px-1.5">
               {conv.unreadCount}
             </span>
           )}

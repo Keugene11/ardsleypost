@@ -32,7 +32,6 @@ export function ChatView({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Subscribe to new messages in real-time
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
@@ -49,7 +48,6 @@ export function ChatView({
           const msg = payload.new as ChatMessage;
           if (msg.receiver_id === currentUserId) {
             setMessages((prev) => [...prev, msg]);
-            // Mark as read
             supabase
               .from("messages")
               .update({ read: true })
@@ -90,11 +88,11 @@ export function ChatView({
   };
 
   return (
-    <div>
-      <div className="space-y-2 mb-4 max-h-[60vh] overflow-y-auto">
+    <div className="flex flex-col">
+      <div className="space-y-1.5 mb-4 max-h-[60vh] overflow-y-auto px-1">
         {messages.length === 0 && (
-          <p className="text-center text-text-muted text-[14px] py-8">
-            Start the conversation!
+          <p className="text-center text-text-muted text-[14px] py-12">
+            Start the conversation
           </p>
         )}
         {messages.map((msg) => {
@@ -105,16 +103,16 @@ export function ChatView({
               className={`flex ${isMine ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-[14px] ${
+                className={`max-w-[80%] px-3.5 py-2 text-[14px] leading-snug ${
                   isMine
-                    ? "bg-[#1a1a1a] text-white rounded-br-md"
-                    : "bg-bg-card border border-border rounded-bl-md"
+                    ? "bg-[#1a1a1a] text-white rounded-2xl rounded-br-sm"
+                    : "bg-bg-input rounded-2xl rounded-bl-sm"
                 }`}
               >
                 <p>{msg.content}</p>
                 <p
-                  className={`text-[10px] mt-1 ${
-                    isMine ? "text-white/50" : "text-text-muted"
+                  className={`text-[10px] mt-0.5 ${
+                    isMine ? "text-white/40" : "text-text-muted/60"
                   }`}
                 >
                   {timeAgo(msg.created_at)}
@@ -131,15 +129,15 @@ export function ChatView({
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Type a message..."
-          className="flex-1 bg-bg-card border border-border rounded-full pl-4 pr-4 py-2.5 text-[14px] placeholder:text-text-muted/50 outline-none focus:border-text-muted transition-colors"
+          placeholder="Message..."
+          className="flex-1 bg-bg-input rounded-full pl-4 pr-4 py-2.5 text-[14px] placeholder:text-text-muted/50 outline-none focus:ring-1 focus:ring-text-muted/30 transition-all"
         />
         <button
           type="submit"
           disabled={!newMessage.trim() || sending}
-          className="bg-[#1a1a1a] text-white p-2.5 rounded-full press disabled:opacity-40"
+          className="bg-[#1a1a1a] text-white p-2.5 rounded-full press disabled:opacity-30"
         >
-          <Send size={18} strokeWidth={1.5} />
+          <Send size={16} strokeWidth={1.5} />
         </button>
       </form>
     </div>

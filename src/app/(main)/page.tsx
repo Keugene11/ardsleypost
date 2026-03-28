@@ -22,7 +22,6 @@ export default async function HomePage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Check which posts the user has liked
   let likedPostIds: Set<string> = new Set();
   if (user) {
     const { data: likes } = await supabase
@@ -41,16 +40,15 @@ export default async function HomePage() {
 
   return (
     <>
-      <header className="mb-6">
-        <h1 className="text-[28px] font-extrabold tracking-tight">Ardloop</h1>
-        <p className="text-[14px] text-text-muted">What&apos;s happening in Ardsley</p>
+      <header className="mb-5">
+        <h1 className="text-[26px] font-extrabold tracking-tight">Ardloop</h1>
       </header>
       <Feed initialPosts={formattedPosts} userId={user?.id || null} />
       <Link
         href="/new"
-        className="fixed bottom-20 right-5 max-w-md w-14 h-14 bg-[#1a1a1a] text-white rounded-full flex items-center justify-center shadow-lg press z-40"
+        className="fixed bottom-20 right-5 w-12 h-12 bg-[#1a1a1a] text-white rounded-full flex items-center justify-center shadow-lg press z-40 hover:scale-105 transition-transform"
       >
-        <Plus size={24} strokeWidth={2} />
+        <Plus size={22} strokeWidth={2.5} />
       </Link>
     </>
   );

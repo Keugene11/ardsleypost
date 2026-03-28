@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, MessageCircle, Send, DollarSign } from "lucide-react";
+import { Heart, MessageCircle, Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Post } from "@/types";
 import { timeAgo } from "@/lib/utils";
@@ -42,83 +42,81 @@ export function PostCard({
 
   return (
     <Link href={`/post/${post.id}`}>
-      <article className="py-4 press">
-        <div className="flex items-center gap-3 mb-3">
-          {post.author.avatar_url ? (
-            <Image
-              src={post.author.avatar_url}
-              alt={post.author.full_name}
-              width={36}
-              height={36}
-              className="rounded-full"
-            />
-          ) : (
-            <div className="w-9 h-9 rounded-full bg-bg-input flex items-center justify-center text-[14px] font-semibold text-text-muted">
-              {post.author.full_name?.[0] || "?"}
-            </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-semibold truncate">
-              {post.author.full_name}
-            </p>
-            <p className="text-[11px] text-text-muted">
-              {timeAgo(post.created_at)}
-            </p>
+      <article className="flex gap-3 py-3.5">
+        {post.author.avatar_url ? (
+          <Image
+            src={post.author.avatar_url}
+            alt={post.author.full_name}
+            width={36}
+            height={36}
+            className="rounded-full shrink-0 mt-0.5"
+          />
+        ) : (
+          <div className="w-9 h-9 rounded-full bg-bg-input flex items-center justify-center text-[13px] font-semibold text-text-muted shrink-0 mt-0.5">
+            {post.author.full_name?.[0] || "?"}
           </div>
-        </div>
+        )}
 
-        <p className="text-[14px] leading-relaxed mb-3 whitespace-pre-wrap">
-          {post.content}
-        </p>
-
-        {post.price && (
-          <div className="flex items-center gap-1.5 mb-3 bg-green-50 border border-green-200 text-green-700 px-3 py-1.5 rounded-xl w-fit">
-            <DollarSign size={14} strokeWidth={2} />
-            <span className="text-[14px] font-bold">
-              {(post.price / 100).toFixed(2)}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-baseline gap-2">
+            <span className="text-[14px] font-semibold truncate">
+              {post.author.full_name}
+            </span>
+            <span className="text-[12px] text-text-muted shrink-0">
+              {timeAgo(post.created_at)}
             </span>
           </div>
-        )}
 
-        {post.image_url && (
-          <div className="mb-3 rounded-xl overflow-hidden">
-            <Image
-              src={post.image_url}
-              alt="Post image"
-              width={400}
-              height={300}
-              className="w-full object-cover"
-            />
-          </div>
-        )}
+          <p className="text-[14px] leading-relaxed mt-0.5 whitespace-pre-wrap">
+            {post.content}
+          </p>
 
-        <div className="flex items-center gap-5 pt-2 border-t border-border">
-          <button
-            onClick={handleLike}
-            className={`flex items-center gap-1.5 text-[13px] press ${
-              liked ? "text-red-500" : "text-text-muted"
-            }`}
-          >
-            <Heart
-              size={16}
-              fill={liked ? "currentColor" : "none"}
-              strokeWidth={1.5}
-            />
-            {likeCount}
-          </button>
-          <span className="flex items-center gap-1.5 text-[13px] text-text-muted">
-            <MessageCircle size={16} strokeWidth={1.5} />
-            {post.comment_count}
-          </span>
-          {userId && userId !== post.author_id && (
-            <Link
-              href={`/messages/${post.author_id}`}
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 text-[13px] text-text-muted press ml-auto"
-            >
-              <Send size={16} strokeWidth={1.5} />
-            </Link>
+          {post.price && (
+            <span className="inline-block mt-2 text-[13px] font-semibold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full">
+              ${(post.price / 100).toFixed(2)}
+            </span>
           )}
+
+          {post.image_url && (
+            <div className="mt-2.5 rounded-xl overflow-hidden">
+              <Image
+                src={post.image_url}
+                alt="Post image"
+                width={400}
+                height={300}
+                className="w-full object-cover"
+              />
+            </div>
+          )}
+
+          <div className="flex items-center gap-5 mt-2.5">
+            <button
+              onClick={handleLike}
+              className={`flex items-center gap-1 text-[13px] press ${
+                liked ? "text-red-500" : "text-text-muted"
+              }`}
+            >
+              <Heart
+                size={15}
+                fill={liked ? "currentColor" : "none"}
+                strokeWidth={1.5}
+              />
+              {likeCount > 0 && likeCount}
+            </button>
+            <span className="flex items-center gap-1 text-[13px] text-text-muted">
+              <MessageCircle size={15} strokeWidth={1.5} />
+              {post.comment_count > 0 && post.comment_count}
+            </span>
+            {userId && userId !== post.author_id && (
+              <Link
+                href={`/messages/${post.author_id}`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center gap-1 text-[13px] text-text-muted press ml-auto"
+              >
+                <Send size={14} strokeWidth={1.5} />
+              </Link>
+            )}
+          </div>
         </div>
       </article>
     </Link>
