@@ -42,7 +42,7 @@ export function PostCard({
 
   return (
     <Link href={`/post/${post.id}`}>
-      <article className="bg-bg-card border border-border rounded-2xl px-5 py-4 hover:bg-bg-card-hover transition-colors press">
+      <article className="py-4 press">
         <div className="flex items-center gap-3 mb-3">
           {post.author.avatar_url ? (
             <Image

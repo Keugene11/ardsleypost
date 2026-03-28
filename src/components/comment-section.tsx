@@ -92,34 +92,33 @@ export function CommentSection({
         </span>
       </div>
 
-      <div className="space-y-3 mb-4">
+      <div className="divide-y divide-border mb-4">
         {comments.map((comment) => (
-          <div
-            key={comment.id}
-            className="bg-bg-card border border-border rounded-xl px-4 py-3"
-          >
-            <div className="flex items-center gap-2 mb-1.5">
-              {comment.author.avatar_url ? (
-                <Image
-                  src={comment.author.avatar_url}
-                  alt={comment.author.full_name}
-                  width={24}
-                  height={24}
-                  className="rounded-full"
-                />
-              ) : (
-                <div className="w-6 h-6 rounded-full bg-bg-input flex items-center justify-center text-[10px] font-semibold text-text-muted">
-                  {comment.author.full_name?.[0] || "?"}
-                </div>
-              )}
-              <span className="text-[13px] font-semibold">
-                {comment.author.full_name}
-              </span>
-              <span className="text-[11px] text-text-muted">
-                {timeAgo(comment.created_at)}
-              </span>
+          <div key={comment.id} className="flex gap-2.5 py-3">
+            {comment.author.avatar_url ? (
+              <Image
+                src={comment.author.avatar_url}
+                alt={comment.author.full_name}
+                width={28}
+                height={28}
+                className="rounded-full shrink-0 mt-0.5"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-bg-input flex items-center justify-center text-[10px] font-semibold text-text-muted shrink-0 mt-0.5">
+                {comment.author.full_name?.[0] || "?"}
+              </div>
+            )}
+            <div className="min-w-0">
+              <div className="flex items-baseline gap-2">
+                <span className="text-[13px] font-semibold">
+                  {comment.author.full_name}
+                </span>
+                <span className="text-[11px] text-text-muted">
+                  {timeAgo(comment.created_at)}
+                </span>
+              </div>
+              <p className="text-[14px] leading-relaxed">{comment.content}</p>
             </div>
-            <p className="text-[14px] leading-relaxed">{comment.content}</p>
           </div>
         ))}
       </div>

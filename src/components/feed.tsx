@@ -40,7 +40,7 @@ export function Feed({
         />
       </div>
 
-      <div className="space-y-3 stagger">
+      <div className="divide-y divide-border">
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-text-muted text-[14px]">
             {search
