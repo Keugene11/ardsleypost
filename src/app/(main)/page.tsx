@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Feed } from "@/components/feed";
 
@@ -44,6 +46,12 @@ export default async function HomePage() {
         <p className="text-[14px] text-text-muted">What&apos;s happening in Ardsley</p>
       </header>
       <Feed initialPosts={formattedPosts} userId={user?.id || null} />
+      <Link
+        href="/new"
+        className="fixed bottom-20 right-5 max-w-md w-14 h-14 bg-[#1a1a1a] text-white rounded-full flex items-center justify-center shadow-lg press z-40"
+      >
+        <Plus size={24} strokeWidth={2} />
+      </Link>
     </>
   );
 }

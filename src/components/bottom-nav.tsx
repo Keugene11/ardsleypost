@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, PlusCircle, MessageCircle, User } from "lucide-react";
+import { Home, MessageCircle, User } from "lucide-react";
 
 const navItems = [
   { href: "/", icon: Home, label: "Feed" },
-  { href: "/new", icon: PlusCircle, label: "Post" },
   { href: "/messages", icon: MessageCircle, label: "Messages" },
   { href: "/profile", icon: User, label: "Profile" },
 ];
