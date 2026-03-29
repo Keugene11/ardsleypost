@@ -14,7 +14,7 @@ workflows:
           corepack prepare pnpm@latest --activate
           pnpm install
       - name: Sync Capacitor
-        script: npx cap sync ios
+        script: pnpm exec cap sync ios
       - name: Fetch signing files
         script: |
           pip3 install codemagic-cli-tools
