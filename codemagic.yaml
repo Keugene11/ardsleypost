@@ -18,31 +18,18 @@ workflows:
       - name: Fetch signing files
         script: |
           pip3 install codemagic-cli-tools
-          export APP_STORE_CONNECT_KEY_IDENTIFIER=$APP_STORE_CONNECT_KEY_IDENTIFIER
-          export APP_STORE_CONNECT_ISSUER_ID=$APP_STORE_CONNECT_ISSUER_ID
-          export APP_STORE_CONNECT_PRIVATE_KEY="$APP_STORE_CONNECT_PRIVATE_KEY"
           app-store-connect fetch-signing-files "com.ardsleypost.app" \
             --type IOS_APP_STORE \
             --create
           keychain initialize
           keychain add-certificates
           xcode-project use-profiles
-      - name: Build archive
-        script: |
-          cd ios/App
-          xcodebuild -project App.xcodeproj \
-            -scheme App \
-            -sdk iphoneos \
-            -configuration Release \
-            -archivePath build/App.xcarchive \
-            archive | xcpretty
-      - name: Export IPA
+      - name: Build and export IPA
         script: |
           cd ios/App
           xcode-project build-ipa \
             --project App.xcodeproj \
             --scheme App \
-            --archive-directory build/App.xcarchive \
             --ipa-directory build/ios/ipa
     artifacts:
       - ios/App/build/ios/ipa/*.ipa
