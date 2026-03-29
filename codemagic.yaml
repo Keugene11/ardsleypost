@@ -6,9 +6,6 @@ workflows:
     environment:
       groups:
         - appstore_credentials
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.ardsleypost.app
       node: 20
     scripts:
       - name: Install pnpm
@@ -17,8 +14,18 @@ workflows:
         script: pnpm install
       - name: Sync Capacitor
         script: npx cap sync ios
-      - name: Set up code signing
-        script: xcode-project use-profiles
+      - name: Fetch signing files
+        script: |
+          pip3 install codemagic-cli-tools
+          export APP_STORE_CONNECT_KEY_IDENTIFIER=$APP_STORE_CONNECT_KEY_IDENTIFIER
+          export APP_STORE_CONNECT_ISSUER_ID=$APP_STORE_CONNECT_ISSUER_ID
+          export APP_STORE_CONNECT_PRIVATE_KEY="$APP_STORE_CONNECT_PRIVATE_KEY"
+          app-store-connect fetch-signing-files "com.ardsleypost.app" \
+            --type IOS_APP_STORE \
+            --create
+          keychain initialize
+          keychain add-certificates
+          xcode-project use-profiles
       - name: Build archive
         script: |
           cd ios/App
