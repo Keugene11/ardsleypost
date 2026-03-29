@@ -2,16 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, MessageCircle, User } from "lucide-react";
+import { Home, LogIn, MessageCircle, User } from "lucide-react";
 
-const navItems = [
+const authNavItems = [
   { href: "/", icon: Home, label: "Feed" },
   { href: "/messages", icon: MessageCircle, label: "Messages" },
   { href: "/profile", icon: User, label: "Profile" },
 ];
 
-export function BottomNav() {
+const publicNavItems = [
+  { href: "/", icon: Home, label: "Feed" },
+  { href: "/login", icon: LogIn, label: "Sign in" },
+];
+
+export function BottomNav({ isLoggedIn }: { isLoggedIn: boolean }) {
   const pathname = usePathname();
+  const navItems = isLoggedIn ? authNavItems : publicNavItems;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-bg/80 backdrop-blur-lg border-t border-border/50 z-50">
