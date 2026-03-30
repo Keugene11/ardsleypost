@@ -8,6 +8,10 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookiesToSet: { name: string; value: string; options: Record<string, unknown> }[] = [];
+    let resolveCookies: () => void;
+    const cookiesReady = new Promise<void>((resolve) => {
+      resolveCookies = resolve;
+    });
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,6 +27,7 @@ export async function GET(request: Request) {
           },
           setAll(cookies) {
             cookiesToSet.push(...cookies);
+            resolveCookies();
           },
         },
       }
@@ -31,6 +36,12 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Wait for the async onAuthStateChange callback to call setAll
+      await Promise.race([
+        cookiesReady,
+        new Promise<void>((resolve) => setTimeout(resolve, 200)),
+      ]);
+
       // Ensure profile exists
       const {
         data: { user },
