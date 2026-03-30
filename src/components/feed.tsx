@@ -1,16 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, ImagePlus } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 import type { Post } from "@/types";
 import { PostCard } from "./post-card";
 
 export function Feed({
   initialPosts,
   userId,
+  userAvatarUrl,
+  userFullName,
 }: {
   initialPosts: Post[];
   userId: string | null;
+  userAvatarUrl: string | null;
+  userFullName: string | null;
 }) {
   const [search, setSearch] = useState("");
 
@@ -25,6 +31,33 @@ export function Feed({
 
   return (
     <div>
+      {userId && (
+        <Link
+          href="/new"
+          className="flex items-center gap-3 bg-bg-card border border-border rounded-2xl px-4 py-3 mb-4 press"
+        >
+          {userAvatarUrl ? (
+            <div className="w-9 h-9 rounded-full overflow-hidden shrink-0">
+              <Image
+                src={userAvatarUrl}
+                alt={userFullName || "You"}
+                width={36}
+                height={36}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-bg-input flex items-center justify-center text-[13px] font-semibold text-text-muted shrink-0">
+              {userFullName?.[0] || "?"}
+            </div>
+          )}
+          <span className="flex-1 text-[14px] text-text-muted/50">
+            What&apos;s happening in Ardsley?
+          </span>
+          <ImagePlus size={18} strokeWidth={1.5} className="text-text-muted/40" />
+        </Link>
+      )}
+
       <div className="relative mb-2">
         <Search
           size={15}

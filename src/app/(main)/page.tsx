@@ -63,6 +63,16 @@ export default async function HomePage() {
     .from("profiles")
     .select("*", { count: "exact", head: true });
 
+  let userProfile: { avatar_url: string | null; full_name: string } | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("avatar_url, full_name")
+      .eq("id", user.id)
+      .single();
+    userProfile = profile;
+  }
+
   return (
     <>
       <header className="mb-5">
@@ -78,7 +88,12 @@ export default async function HomePage() {
           The social network built for Ardsley students, parents, and alumni.
         </p>
       </header>
-      <Feed initialPosts={formattedPosts} userId={user?.id || null} />
+      <Feed
+        initialPosts={formattedPosts}
+        userId={user?.id || null}
+        userAvatarUrl={userProfile?.avatar_url || null}
+        userFullName={userProfile?.full_name || null}
+      />
     </>
   );
 }
