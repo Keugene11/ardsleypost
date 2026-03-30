@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Feed } from "@/components/feed";
 
@@ -81,22 +79,6 @@ export default async function HomePage() {
         </p>
       </header>
       <Feed initialPosts={formattedPosts} userId={user?.id || null} />
-      {user ? (
-        <Link
-          href="/new"
-          className="fixed bottom-20 right-5 w-12 h-12 bg-[#1a1a1a] text-white rounded-full flex items-center justify-center shadow-lg press z-40 hover:scale-105 transition-transform"
-        >
-          <Plus size={22} strokeWidth={2.5} />
-        </Link>
-      ) : (
-        <Link
-          href="/login"
-          className="fixed bottom-20 right-5 h-12 bg-[#1a1a1a] text-white px-5 rounded-full flex items-center justify-center shadow-lg press z-40 hover:scale-105 transition-transform text-[14px] font-semibold gap-2"
-        >
-          <Plus size={18} strokeWidth={2.5} />
-          Sign in
-        </Link>
-      )}
     </>
   );
 }
