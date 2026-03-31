@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { timeAgo } from "@/lib/utils";
@@ -26,11 +26,37 @@ export function ChatView({
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const scrollToBottom = useCallback(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
+  // Handle mobile keyboard resize
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const onResize = () => {
+      const offset = window.innerHeight - vv.height;
+      setKeyboardOffset(offset);
+      // Scroll to bottom when keyboard opens
+      setTimeout(scrollToBottom, 50);
+    };
+
+    vv.addEventListener("resize", onResize);
+    vv.addEventListener("scroll", onResize);
+    return () => {
+      vv.removeEventListener("resize", onResize);
+      vv.removeEventListener("scroll", onResize);
+    };
+  }, [scrollToBottom]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -88,7 +114,7 @@ export function ChatView({
   };
 
   return (
-    <div className="flex flex-col" style={{ height: "calc(100dvh - 180px)" }}>
+    <div className="flex flex-col" style={{ height: `calc(100dvh - 180px - ${keyboardOffset}px)` }}>
       <div className="flex-1 space-y-1.5 overflow-y-auto px-1 pb-4">
         {messages.length === 0 && (
           <p className="text-center text-text-muted text-[14px] py-12">
@@ -124,13 +150,18 @@ export function ChatView({
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSend} className="flex gap-2 pt-3 border-t border-border">
+      <form
+        ref={formRef}
+        onSubmit={handleSend}
+        className="flex gap-2 pt-3 border-t border-border shrink-0"
+      >
         <input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Message..."
           maxLength={5000}
+          enterKeyHint="send"
           className="flex-1 bg-bg-input rounded-full pl-4 pr-4 py-2.5 text-[14px] placeholder:text-text-muted/50 outline-none focus:ring-1 focus:ring-text-muted/30 transition-all"
         />
         <button
