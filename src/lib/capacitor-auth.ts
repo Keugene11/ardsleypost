@@ -23,6 +23,7 @@ export async function nativeOAuthSignIn(provider: "google" | "apple") {
     options: {
       redirectTo: "com.ardsleypost.app://auth/callback",
       skipBrowserRedirect: true,
+      queryParams: provider === "google" ? { prompt: "select_account" } : {},
     },
   });
 
