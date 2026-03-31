@@ -4,10 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Heart, MessageCircle, Send, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Send, Trash2, Flag } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Post } from "@/types";
 import { timeAgo } from "@/lib/utils";
+import { ReportModal } from "./report-modal";
 
 export function PostCard({
   post,
@@ -20,6 +21,7 @@ export function PostCard({
   const [likeCount, setLikeCount] = useState(post.like_count);
   const [deleted, setDeleted] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const router = useRouter();
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -70,6 +72,7 @@ export function PostCard({
   };
 
   return (
+    <>
     <Link href={`/post/${post.id}`}>
       <article className="flex gap-3 py-3.5">
         <Link
@@ -143,13 +146,25 @@ export function PostCard({
               {post.comment_count > 0 && post.comment_count}
             </span>
             {userId && userId !== post.author_id && (
-              <Link
-                href={`/messages/${post.author_id}`}
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1 text-[13px] text-text-muted press ml-auto"
-              >
-                <Send size={14} strokeWidth={1.5} />
-              </Link>
+              <span className="flex items-center gap-3 ml-auto">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowReport(true);
+                  }}
+                  className="flex items-center gap-1 text-[13px] text-text-muted hover:text-orange-500 press"
+                >
+                  <Flag size={14} strokeWidth={1.5} />
+                </button>
+                <Link
+                  href={`/messages/${post.author_id}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-1 text-[13px] text-text-muted press"
+                >
+                  <Send size={14} strokeWidth={1.5} />
+                </Link>
+              </span>
             )}
             {userId && userId === post.author_id && (
               confirmingDelete ? (
@@ -229,5 +244,13 @@ export function PostCard({
         </div>
       </article>
     </Link>
+    {showReport && (
+      <ReportModal
+        type="post"
+        targetId={post.id}
+        onClose={() => setShowReport(false)}
+      />
+    )}
+    </>
   );
 }

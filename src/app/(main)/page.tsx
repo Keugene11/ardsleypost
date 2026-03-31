@@ -43,21 +43,30 @@ export default async function HomePage() {
   });
 
   let likedPostIds: Set<string> = new Set();
+  let blockedUserIds: Set<string> = new Set();
   if (user) {
     const { data: likes } = await supabase
       .from("likes")
       .select("post_id")
       .eq("user_id", user.id);
     likedPostIds = new Set(likes?.map((l) => l.post_id) || []);
+
+    const { data: blocks } = await supabase
+      .from("blocks")
+      .select("blocked_id")
+      .eq("blocker_id", user.id);
+    blockedUserIds = new Set(blocks?.map((b) => b.blocked_id) || []);
   }
 
-  const formattedPosts = (posts || []).map((post) => ({
-    ...post,
-    like_count: post.like_count?.[0]?.count || 0,
-    comment_count: post.comment_count?.[0]?.count || 0,
-    user_has_liked: likedPostIds.has(post.id),
-    recent_comments: (commentsByPost.get(post.id) || []).reverse(),
-  }));
+  const formattedPosts = (posts || [])
+    .filter((post) => !blockedUserIds.has(post.author_id))
+    .map((post) => ({
+      ...post,
+      like_count: post.like_count?.[0]?.count || 0,
+      comment_count: post.comment_count?.[0]?.count || 0,
+      user_has_liked: likedPostIds.has(post.id),
+      recent_comments: (commentsByPost.get(post.id) || []).reverse(),
+    }));
 
   const { count: userCount } = await supabase
     .from("profiles")

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Send, Heart, MessageCircle } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
 import { ServicesDisplay } from "@/components/services-display";
+import { UserActions } from "@/components/user-actions";
 import type { Services } from "@/types";
 
 export default async function UserProfilePage({
@@ -29,6 +30,17 @@ export default async function UserProfilePage({
     .single();
 
   if (!profile) notFound();
+
+  let isBlocked = false;
+  if (user && !isOwnProfile) {
+    const { data: block } = await supabase
+      .from("blocks")
+      .select("id")
+      .eq("blocker_id", user.id)
+      .eq("blocked_id", id)
+      .maybeSingle();
+    isBlocked = !!block;
+  }
 
   const { data: posts } = await supabase
     .from("posts")
@@ -94,13 +106,16 @@ export default async function UserProfilePage({
         )}
 
         {user && !isOwnProfile && (
-          <Link
-            href={`/messages/${id}`}
-            className="mt-4 flex items-center gap-2 bg-[#1a1a1a] text-white px-5 py-2.5 rounded-full text-[14px] font-semibold press"
-          >
-            <Send size={14} strokeWidth={1.5} />
-            Message
-          </Link>
+          <>
+            <Link
+              href={`/messages/${id}`}
+              className="mt-4 flex items-center gap-2 bg-[#1a1a1a] text-white px-5 py-2.5 rounded-full text-[14px] font-semibold press"
+            >
+              <Send size={14} strokeWidth={1.5} />
+              Message
+            </Link>
+            <UserActions userId={id} isBlocked={isBlocked} />
+          </>
         )}
 
         {isOwnProfile && (

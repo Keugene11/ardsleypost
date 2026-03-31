@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-bg">
@@ -192,6 +194,19 @@ export default function PrivacyPolicy() {
             </a>
             .
           </p>
+
+          <div className="pt-4 border-t border-border">
+            <p>
+              See also our{" "}
+              <Link
+                href="/terms"
+                className="text-text underline underline-offset-2"
+              >
+                Terms of Service
+              </Link>
+              .
+            </p>
+          </div>
         </div>
       </main>
     </div>
