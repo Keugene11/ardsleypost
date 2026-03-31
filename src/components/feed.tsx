@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Search, ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import type { Post } from "@/types";
@@ -21,6 +22,12 @@ export function Feed({
 }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [userResults, setUserResults] = useState<
+    { id: string; full_name: string; avatar_url: string | null }[]
+  >([]);
+  const [showUserResults, setShowUserResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -81,6 +88,38 @@ export function Feed({
     el.style.height = "auto";
     el.style.height = el.scrollHeight + "px";
   };
+
+  useEffect(() => {
+    if (!search.trim()) {
+      setUserResults([]);
+      setShowUserResults(false);
+      return;
+    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      const res = await fetch(
+        `/api/search/users?q=${encodeURIComponent(search.trim())}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setUserResults(data);
+        setShowUserResults(data.length > 0);
+      }
+    }, 250);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [search]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowUserResults(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const filtered = initialPosts.filter((p) => {
     if (!search) return true;
@@ -176,19 +215,52 @@ export function Feed({
         </div>
       )}
 
-      <div className="relative mb-2 mt-2">
+      <div className="relative mb-2 mt-2" ref={searchRef}>
         <Search
           size={15}
           strokeWidth={1.5}
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted/50"
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted/50 z-10"
         />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search..."
+          onFocus={() => {
+            if (userResults.length > 0) setShowUserResults(true);
+          }}
+          placeholder="Search posts and people..."
           className="w-full bg-bg-input rounded-full pl-9 pr-4 py-2 text-[13px] placeholder:text-text-muted/40 outline-none focus:ring-1 focus:ring-text-muted/30 transition-all"
         />
+        {showUserResults && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-bg-card border border-border rounded-2xl shadow-lg overflow-hidden z-50 animate-fade-in">
+            <p className="px-4 pt-2.5 pb-1.5 text-[10px] uppercase tracking-wide text-text-muted font-semibold">
+              People
+            </p>
+            {userResults.map((u) => (
+              <Link
+                key={u.id}
+                href={`/user/${u.id}`}
+                onClick={() => setShowUserResults(false)}
+                className="flex items-center gap-3 px-4 py-2.5 hover:bg-bg-card-hover transition-colors press"
+              >
+                {u.avatar_url ? (
+                  <Image
+                    src={u.avatar_url}
+                    alt={u.full_name}
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-bg-input flex items-center justify-center text-[12px] font-semibold text-text-muted">
+                    {u.full_name?.[0] || "?"}
+                  </div>
+                )}
+                <span className="text-[14px] font-medium">{u.full_name}</span>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="divide-y divide-border">
