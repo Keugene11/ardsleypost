@@ -10,10 +10,12 @@ export function BuyButton({
   sellerOnboarded: boolean;
 }) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleBuy = async () => {
     if (!sellerOnboarded) return;
     setLoading(true);
+    setError(null);
 
     try {
       const res = await fetch("/api/purchase", {
@@ -27,11 +29,11 @@ export function BuyButton({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "Something went wrong");
+        setError(data.error || "Something went wrong");
         setLoading(false);
       }
     } catch {
-      alert("Network error. Please try again.");
+      setError("Network error. Please try again.");
       setLoading(false);
     }
   };
@@ -45,12 +47,17 @@ export function BuyButton({
   }
 
   return (
-    <button
-      onClick={handleBuy}
-      disabled={loading}
-      className="bg-[#1a1a1a] text-white px-5 py-2 rounded-xl font-semibold text-[13px] press disabled:opacity-40"
-    >
-      {loading ? "Processing..." : "Buy Now"}
-    </button>
+    <div>
+      <button
+        onClick={handleBuy}
+        disabled={loading}
+        className="bg-[#1a1a1a] text-white px-5 py-2 rounded-xl font-semibold text-[13px] press disabled:opacity-40"
+      >
+        {loading ? "Processing..." : "Buy Now"}
+      </button>
+      {error && (
+        <p className="text-[12px] text-red-500 mt-1">{error}</p>
+      )}
+    </div>
   );
 }
