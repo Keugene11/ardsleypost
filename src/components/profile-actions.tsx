@@ -220,27 +220,20 @@ export function ProfileActions({
         </div>
       </div>
 
-      {/* Role selector */}
-      <div className="mb-5">
-        <p className="text-[12px] font-semibold uppercase tracking-wide text-text-muted mb-2">
-          I am a
-        </p>
-        <div className="flex flex-wrap gap-2">
+      {/* Role selector — compact dropdown */}
+      <div className="mb-5 flex items-center gap-2">
+        <select
+          value={roleValue || ""}
+          onChange={(e) => handleRoleChange(e.target.value as UserRole)}
+          disabled={savingRole}
+          className="bg-bg-input border border-border rounded-full px-4 py-2 text-[13px] font-semibold text-text outline-none press appearance-none cursor-pointer pr-8"
+          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" }}
+        >
+          <option value="" disabled>I am a...</option>
           {ROLE_OPTIONS.map((r) => (
-            <button
-              key={r}
-              onClick={() => handleRoleChange(r)}
-              disabled={savingRole}
-              className={`px-4 py-2 rounded-full text-[13px] font-semibold press transition-colors ${
-                roleValue === r
-                  ? "bg-[#1a1a1a] text-white"
-                  : "bg-bg-input text-text-muted"
-              }`}
-            >
-              {ROLE_LABELS[r]}
-            </button>
+            <option key={r} value={r}>{ROLE_LABELS[r]}</option>
           ))}
-        </div>
+        </select>
       </div>
 
       {/* Bio — always visible, tap to edit */}
