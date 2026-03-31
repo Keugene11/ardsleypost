@@ -50,7 +50,7 @@ export function Feed({
   };
 
   const handlePost = async () => {
-    if (!content.trim() || posting) return;
+    if (!content.trim() || content.length > 5000 || posting) return;
     setPosting(true);
 
     const supabase = createClient();
@@ -202,9 +202,18 @@ export function Feed({
                     <ImagePlus size={18} strokeWidth={1.5} />
                   </button>
                 </div>
+                {content.length > 4500 && (
+                  <span
+                    className={`text-[12px] ${
+                      content.length > 5000 ? "text-red-500 font-semibold" : "text-text-muted"
+                    }`}
+                  >
+                    {content.length}/5000
+                  </span>
+                )}
                 <button
                   onClick={handlePost}
-                  disabled={!content.trim() || posting}
+                  disabled={!content.trim() || content.length > 5000 || posting}
                   className="bg-[#1a1a1a] text-white px-4 py-1.5 rounded-full font-semibold text-[13px] press disabled:opacity-30"
                 >
                   {posting ? "Posting..." : "Post"}
