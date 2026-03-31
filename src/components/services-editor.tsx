@@ -221,8 +221,7 @@ export function ServicesEditor({
                   </div>
                   {entry && (
                     <>
-                      <input
-                        type="text"
+                      <textarea
                         value={entry.details}
                         onChange={(e) => updateDetails(type, e.target.value)}
                         placeholder={
@@ -230,9 +229,15 @@ export function ServicesEditor({
                             ? "What service? Add details..."
                             : "Add details (rates, availability, subjects...)"
                         }
-                        maxLength={200}
-                        className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-[13px] placeholder:text-text-muted/40 outline-none focus:border-text-muted transition-colors"
+                        maxLength={5000}
+                        rows={3}
+                        className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-[13px] placeholder:text-text-muted/40 outline-none focus:border-text-muted transition-colors resize-none leading-relaxed"
                       />
+                      {entry.details.length > 4500 && (
+                        <p className={`text-[11px] mt-1 ${entry.details.length > 5000 ? "text-red-500 font-semibold" : "text-text-muted"}`}>
+                          {entry.details.length}/5000
+                        </p>
+                      )}
                       <button
                         type="button"
                         onClick={() => {
