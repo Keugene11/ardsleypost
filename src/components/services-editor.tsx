@@ -94,29 +94,27 @@ export function ServicesEditor({
             <Pencil size={14} strokeWidth={1.5} />
           </button>
         </div>
-        {hasAny && (
-          <button
-            type="button"
-            onClick={handleTogglePause}
-            disabled={togglingPause}
-            className="flex items-center gap-3 mb-3 press w-full"
+        <button
+          type="button"
+          onClick={handleTogglePause}
+          disabled={togglingPause}
+          className="flex items-center gap-3 mb-3 press w-full"
+        >
+          <div
+            className={`relative w-10 h-[22px] rounded-full transition-colors duration-200 ${
+              paused ? "bg-orange-400" : "bg-bg-input border border-border"
+            }`}
           >
             <div
-              className={`relative w-10 h-[22px] rounded-full transition-colors duration-200 ${
-                paused ? "bg-orange-400" : "bg-bg-input border border-border"
+              className={`absolute top-[2px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                paused ? "translate-x-[20px]" : "translate-x-[2px]"
               }`}
-            >
-              <div
-                className={`absolute top-[2px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                  paused ? "translate-x-[20px]" : "translate-x-[2px]"
-                }`}
-              />
-            </div>
-            <span className={`text-[13px] font-medium ${paused ? "text-orange-600" : "text-text-muted"}`}>
-              {paused ? "Not available right now" : "Mark as unavailable"}
-            </span>
-          </button>
-        )}
+            />
+          </div>
+          <span className={`text-[13px] font-medium ${paused ? "text-orange-600" : "text-text-muted"}`}>
+            {paused ? "Not available right now" : "Mark as unavailable"}
+          </span>
+        </button>
 
         {hasAny ? (
           <div className={`space-y-2 ${paused ? "opacity-40" : ""}`}>
@@ -225,18 +223,33 @@ export function ServicesEditor({
                     </button>
                   </div>
                   {entry && (
-                    <input
-                      type="text"
-                      value={entry.details}
-                      onChange={(e) => updateDetails(type, e.target.value)}
-                      placeholder={
-                        type === "other"
-                          ? "What service? Add details..."
-                          : "Add details (rates, availability, subjects...)"
-                      }
-                      maxLength={200}
-                      className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-[13px] placeholder:text-text-muted/40 outline-none focus:border-text-muted transition-colors"
-                    />
+                    <>
+                      <input
+                        type="text"
+                        value={entry.details}
+                        onChange={(e) => updateDetails(type, e.target.value)}
+                        placeholder={
+                          type === "other"
+                            ? "What service? Add details..."
+                            : "Add details (rates, availability, subjects...)"
+                        }
+                        maxLength={200}
+                        className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-[13px] placeholder:text-text-muted/40 outline-none focus:border-text-muted transition-colors"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDraft((prev) => {
+                            const next = { ...prev };
+                            delete next[type];
+                            return next;
+                          });
+                        }}
+                        className="mt-2 text-[12px] text-red-500 font-medium press"
+                      >
+                        Remove
+                      </button>
+                    </>
                   )}
                   {!entry && (
                     <p className="text-[12px] text-text-muted/50 text-center">
