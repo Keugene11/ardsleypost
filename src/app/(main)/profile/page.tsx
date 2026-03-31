@@ -55,6 +55,7 @@ export default async function ProfilePage() {
       <ServicesEditor
         userId={user.id}
         services={(profile?.services as Services) || {}}
+        servicesPaused={profile?.services_paused || false}
       />
 
       <div className="mt-8">

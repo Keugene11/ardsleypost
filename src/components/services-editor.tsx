@@ -10,17 +10,34 @@ import { SERVICE_TYPES, SERVICE_LABELS, SERVICE_ICONS } from "@/types";
 export function ServicesEditor({
   userId,
   services: initialServices,
+  servicesPaused: initialPaused,
 }: {
   userId: string;
   services: Services;
+  servicesPaused: boolean;
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Services>(initialServices);
   const [saving, setSaving] = useState(false);
   const [expanded, setExpanded] = useState<ServiceType | null>(null);
+  const [paused, setPaused] = useState(initialPaused);
+  const [togglingPause, setTogglingPause] = useState(false);
 
   const hasAny = Object.values(initialServices).some((s) => s);
+
+  const handleTogglePause = async () => {
+    setTogglingPause(true);
+    const newVal = !paused;
+    setPaused(newVal);
+    const supabase = createClient();
+    await supabase
+      .from("profiles")
+      .update({ services_paused: newVal })
+      .eq("id", userId);
+    setTogglingPause(false);
+    router.refresh();
+  };
 
   const toggleService = (type: ServiceType, mode: ServiceMode) => {
     setDraft((prev) => {
@@ -77,8 +94,32 @@ export function ServicesEditor({
             <Pencil size={14} strokeWidth={1.5} />
           </button>
         </div>
+        {hasAny && (
+          <button
+            type="button"
+            onClick={handleTogglePause}
+            disabled={togglingPause}
+            className="flex items-center gap-3 mb-3 press w-full"
+          >
+            <div
+              className={`relative w-10 h-[22px] rounded-full transition-colors duration-200 ${
+                paused ? "bg-orange-400" : "bg-bg-input border border-border"
+              }`}
+            >
+              <div
+                className={`absolute top-[2px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                  paused ? "translate-x-[20px]" : "translate-x-[2px]"
+                }`}
+              />
+            </div>
+            <span className={`text-[13px] font-medium ${paused ? "text-orange-600" : "text-text-muted"}`}>
+              {paused ? "Not available right now" : "Mark as unavailable"}
+            </span>
+          </button>
+        )}
+
         {hasAny ? (
-          <div className="space-y-2">
+          <div className={`space-y-2 ${paused ? "opacity-40" : ""}`}>
             {SERVICE_TYPES.map((type) => {
               const entry = initialServices[type];
               if (!entry) return null;

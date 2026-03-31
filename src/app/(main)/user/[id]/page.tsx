@@ -135,7 +135,10 @@ export default async function UserProfilePage({
         )}
 
         {profile.services && (
-          <ServicesDisplay services={profile.services as Services} />
+          <ServicesDisplay
+            services={profile.services as Services}
+            paused={profile.services_paused || false}
+          />
         )}
       </div>
 
