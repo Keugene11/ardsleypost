@@ -21,39 +21,29 @@ export default async function UserProfilePage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If viewing your own profile, could redirect, but let's just show it
   const isOwnProfile = user?.id === id;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", id)
-    .single();
+  const [{ data: profile }, { data: posts }, blockResult] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", id).single(),
+    supabase
+      .from("posts")
+      .select(
+        `
+        *,
+        like_count:likes(count),
+        comment_count:comments(count)
+      `
+      )
+      .eq("author_id", id)
+      .order("created_at", { ascending: false }),
+    user && !isOwnProfile
+      ? supabase.from("blocks").select("id").eq("blocker_id", user.id).eq("blocked_id", id).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
 
   if (!profile) notFound();
 
-  let isBlocked = false;
-  if (user && !isOwnProfile) {
-    const { data: block } = await supabase
-      .from("blocks")
-      .select("id")
-      .eq("blocker_id", user.id)
-      .eq("blocked_id", id)
-      .maybeSingle();
-    isBlocked = !!block;
-  }
-
-  const { data: posts } = await supabase
-    .from("posts")
-    .select(
-      `
-      *,
-      like_count:likes(count),
-      comment_count:comments(count)
-    `
-    )
-    .eq("author_id", id)
-    .order("created_at", { ascending: false });
+  const isBlocked = !!blockResult.data;
 
   const formattedPosts = (posts || []).map((post) => ({
     ...post,

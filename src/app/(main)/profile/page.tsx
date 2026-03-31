@@ -17,23 +17,20 @@ export default async function ProfilePage() {
 
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  const { data: posts } = await supabase
-    .from("posts")
-    .select(
+  const [{ data: profile }, { data: posts }] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", user.id).single(),
+    supabase
+      .from("posts")
+      .select(
+        `
+        *,
+        like_count:likes(count),
+        comment_count:comments(count)
       `
-      *,
-      like_count:likes(count),
-      comment_count:comments(count)
-    `
-    )
-    .eq("author_id", user.id)
-    .order("created_at", { ascending: false });
+      )
+      .eq("author_id", user.id)
+      .order("created_at", { ascending: false }),
+  ]);
 
   const formattedPosts = (posts || []).map((post) => ({
     ...post,

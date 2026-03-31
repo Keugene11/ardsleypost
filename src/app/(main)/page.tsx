@@ -7,22 +7,41 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: posts } = await supabase
-    .from("posts")
-    .select(
+  // Run all independent queries in parallel
+  const [postsResult, userCountResult, ...userResults] = await Promise.all([
+    supabase
+      .from("posts")
+      .select(
+        `
+        *,
+        author:profiles(*),
+        like_count:likes(count),
+        comment_count:comments(count)
       `
-      *,
-      author:profiles(*),
-      like_count:likes(count),
-      comment_count:comments(count)
-    `
-    )
-    .order("created_at", { ascending: false })
-    .limit(50);
+      )
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true }),
+    ...(user
+      ? [
+          supabase.from("likes").select("post_id").eq("user_id", user.id),
+          supabase.from("blocks").select("blocked_id").eq("blocker_id", user.id),
+          supabase.from("profiles").select("avatar_url, full_name").eq("id", user.id).single(),
+        ]
+      : []),
+  ]);
+
+  const posts = postsResult.data;
+  const userCount = userCountResult.count;
+  const likedPostIds = new Set(user ? (userResults[0]?.data?.map((l: { post_id: string }) => l.post_id) || []) : []);
+  const blockedUserIds = new Set(user ? (userResults[1]?.data?.map((b: { blocked_id: string }) => b.blocked_id) || []) : []);
+  const userProfile = user ? userResults[2]?.data : null;
 
   const postIds = (posts || []).map((p) => p.id);
 
-  // Fetch recent comments for all posts in one query
+  // Fetch recent comments (depends on posts result)
   const { data: recentComments } = postIds.length
     ? await supabase
         .from("comments")
@@ -42,22 +61,6 @@ export default async function HomePage() {
     }
   });
 
-  let likedPostIds: Set<string> = new Set();
-  let blockedUserIds: Set<string> = new Set();
-  if (user) {
-    const { data: likes } = await supabase
-      .from("likes")
-      .select("post_id")
-      .eq("user_id", user.id);
-    likedPostIds = new Set(likes?.map((l) => l.post_id) || []);
-
-    const { data: blocks } = await supabase
-      .from("blocks")
-      .select("blocked_id")
-      .eq("blocker_id", user.id);
-    blockedUserIds = new Set(blocks?.map((b) => b.blocked_id) || []);
-  }
-
   const formattedPosts = (posts || [])
     .filter((post) => !blockedUserIds.has(post.author_id))
     .map((post) => ({
@@ -67,20 +70,6 @@ export default async function HomePage() {
       user_has_liked: likedPostIds.has(post.id),
       recent_comments: (commentsByPost.get(post.id) || []).reverse(),
     }));
-
-  const { count: userCount } = await supabase
-    .from("profiles")
-    .select("*", { count: "exact", head: true });
-
-  let userProfile: { avatar_url: string | null; full_name: string } | null = null;
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("avatar_url, full_name")
-      .eq("id", user.id)
-      .single();
-    userProfile = profile;
-  }
 
   return (
     <>
