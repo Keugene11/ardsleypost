@@ -1,4 +1,4 @@
-export const SERVICE_TYPES = ["tutoring", "driving", "babysitting", "pet_watching"] as const;
+export const SERVICE_TYPES = ["tutoring", "driving", "babysitting", "pet_watching", "other"] as const;
 export type ServiceType = (typeof SERVICE_TYPES)[number];
 export type ServiceMode = "offering" | "looking";
 
@@ -14,6 +14,15 @@ export const SERVICE_LABELS: Record<ServiceType, string> = {
   driving: "Driving",
   babysitting: "Babysitting",
   pet_watching: "Pet Watching",
+  other: "Other",
+};
+
+export const SERVICE_ICONS: Record<ServiceType, string> = {
+  tutoring: "📚",
+  driving: "🚗",
+  babysitting: "👶",
+  pet_watching: "🐾",
+  other: "✨",
 };
 
 export const ROLE_OPTIONS = ["student", "parent", "alumni", "other"] as const;

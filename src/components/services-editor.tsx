@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, X, Pencil } from "lucide-react";
+import { Check, X, Pencil, ChevronDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Services, ServiceType, ServiceMode, ServiceEntry } from "@/types";
-import { SERVICE_TYPES, SERVICE_LABELS } from "@/types";
+import { SERVICE_TYPES, SERVICE_LABELS, SERVICE_ICONS } from "@/types";
 
 export function ServicesEditor({
   userId,
@@ -18,6 +18,7 @@ export function ServicesEditor({
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Services>(initialServices);
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState<ServiceType | null>(null);
 
   const hasAny = Object.values(initialServices).some((s) => s);
 
@@ -44,7 +45,6 @@ export function ServicesEditor({
   const handleSave = async () => {
     setSaving(true);
     const supabase = createClient();
-    // Clean out empty entries
     const cleaned: Services = {};
     for (const [key, val] of Object.entries(draft)) {
       if (val) cleaned[key as ServiceType] = val;
@@ -82,9 +82,7 @@ export function ServicesEditor({
             {SERVICE_TYPES.map((type) => {
               const entry = initialServices[type];
               if (!entry) return null;
-              return (
-                <ServiceBadge key={type} type={type} entry={entry} />
-              );
+              return <ServiceBadge key={type} type={type} entry={entry} />;
             })}
           </div>
         ) : (
@@ -97,7 +95,7 @@ export function ServicesEditor({
                 Tap to add services
               </p>
               <p className="text-[12px] text-text-muted/40 mt-0.5">
-                Let people know what you offer or need — tutoring, driving, babysitting, pet watching.
+                Let people know what you offer or need — tutoring, driving, babysitting, and more.
               </p>
             </div>
           </button>
@@ -111,62 +109,117 @@ export function ServicesEditor({
       <h3 className="text-[13px] font-semibold uppercase tracking-wide text-text-muted mb-3">
         Services
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-2">
         {SERVICE_TYPES.map((type) => {
           const entry = draft[type];
+          const isExpanded = expanded === type;
+          const isActive = !!entry;
+
           return (
-            <div key={type} className="bg-bg-card border border-border rounded-xl px-4 py-3">
-              <p className="text-[14px] font-semibold mb-2">{SERVICE_LABELS[type]}</p>
-              <div className="flex gap-2 mb-2">
-                <button
-                  type="button"
-                  onClick={() => toggleService(type, "offering")}
-                  className={`px-3 py-1.5 rounded-full text-[13px] font-medium press transition-colors ${
-                    entry?.mode === "offering"
-                      ? "bg-green-100 text-green-700 border border-green-300"
-                      : "bg-bg-input text-text-muted border border-transparent"
+            <div
+              key={type}
+              className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                isActive
+                  ? entry.mode === "offering"
+                    ? "border-green-200 bg-green-50/50"
+                    : "border-blue-200 bg-blue-50/50"
+                  : "border-border bg-bg-card"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => setExpanded(isExpanded ? null : type)}
+                className="w-full flex items-center justify-between px-4 py-3.5 press"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-[18px]">{SERVICE_ICONS[type]}</span>
+                  <span className="text-[15px] font-semibold text-text">
+                    {SERVICE_LABELS[type]}
+                  </span>
+                  {isActive && (
+                    <span
+                      className={`text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full ${
+                        entry.mode === "offering"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-blue-100 text-blue-700"
+                      }`}
+                    >
+                      {entry.mode === "offering" ? "Offering" : "Looking"}
+                    </span>
+                  )}
+                </div>
+                <ChevronDown
+                  size={16}
+                  strokeWidth={2}
+                  className={`text-text-muted transition-transform duration-200 ${
+                    isExpanded ? "rotate-180" : ""
                   }`}
-                >
-                  Offering
-                </button>
-                <button
-                  type="button"
-                  onClick={() => toggleService(type, "looking")}
-                  className={`px-3 py-1.5 rounded-full text-[13px] font-medium press transition-colors ${
-                    entry?.mode === "looking"
-                      ? "bg-blue-100 text-blue-700 border border-blue-300"
-                      : "bg-bg-input text-text-muted border border-transparent"
-                  }`}
-                >
-                  Looking
-                </button>
-              </div>
-              {entry && (
-                <input
-                  type="text"
-                  value={entry.details}
-                  onChange={(e) => updateDetails(type, e.target.value)}
-                  placeholder="Add details (rates, availability, subjects...)"
-                  maxLength={200}
-                  className="w-full bg-bg-input rounded-lg px-3 py-2 text-[13px] placeholder:text-text-muted/40 outline-none focus:ring-1 focus:ring-text-muted/30 transition-all"
                 />
+              </button>
+
+              {isExpanded && (
+                <div className="px-4 pb-4 animate-fade-in">
+                  <div className="flex gap-2 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => toggleService(type, "offering")}
+                      className={`flex-1 py-2.5 rounded-xl text-[13px] font-semibold press transition-all ${
+                        entry?.mode === "offering"
+                          ? "bg-green-500 text-white shadow-sm"
+                          : "bg-bg-input text-text-muted hover:bg-bg-card-hover"
+                      }`}
+                    >
+                      Offering
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleService(type, "looking")}
+                      className={`flex-1 py-2.5 rounded-xl text-[13px] font-semibold press transition-all ${
+                        entry?.mode === "looking"
+                          ? "bg-blue-500 text-white shadow-sm"
+                          : "bg-bg-input text-text-muted hover:bg-bg-card-hover"
+                      }`}
+                    >
+                      Looking
+                    </button>
+                  </div>
+                  {entry && (
+                    <input
+                      type="text"
+                      value={entry.details}
+                      onChange={(e) => updateDetails(type, e.target.value)}
+                      placeholder={
+                        type === "other"
+                          ? "What service? Add details..."
+                          : "Add details (rates, availability, subjects...)"
+                      }
+                      maxLength={200}
+                      className="w-full bg-white border border-border rounded-xl px-3.5 py-2.5 text-[13px] placeholder:text-text-muted/40 outline-none focus:border-text-muted transition-colors"
+                    />
+                  )}
+                  {!entry && (
+                    <p className="text-[12px] text-text-muted/50 text-center">
+                      Tap Offering or Looking to get started
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           );
         })}
       </div>
-      <div className="flex gap-2 mt-3">
+      <div className="flex gap-2 mt-4">
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-1.5 bg-[#1a1a1a] text-white px-4 py-2 rounded-full font-semibold text-[13px] press disabled:opacity-30"
+          className="flex items-center gap-1.5 bg-[#1a1a1a] text-white px-5 py-2.5 rounded-full font-semibold text-[13px] press disabled:opacity-30"
         >
           <Check size={14} strokeWidth={2} />
           {saving ? "Saving..." : "Save"}
         </button>
         <button
           onClick={handleCancel}
-          className="flex items-center gap-1.5 text-[13px] text-text-muted px-3 py-2 press"
+          className="flex items-center gap-1.5 text-[13px] text-text-muted px-3 py-2.5 press"
         >
           <X size={14} strokeWidth={2} />
           Cancel
@@ -180,25 +233,28 @@ function ServiceBadge({ type, entry }: { type: ServiceType; entry: ServiceEntry 
   const isOffering = entry.mode === "offering";
   return (
     <div
-      className={`rounded-xl px-3.5 py-2.5 ${
+      className={`rounded-2xl px-4 py-3 flex items-start gap-3 ${
         isOffering
           ? "bg-green-50 border border-green-200"
           : "bg-blue-50 border border-blue-200"
       }`}
     >
-      <div className="flex items-center gap-2">
-        <span
-          className={`text-[11px] font-semibold uppercase tracking-wide ${
-            isOffering ? "text-green-600" : "text-blue-600"
-          }`}
-        >
-          {isOffering ? "Offering" : "Looking for"}
-        </span>
-        <span className="text-[14px] font-semibold">{SERVICE_LABELS[type]}</span>
+      <span className="text-[16px] mt-0.5">{SERVICE_ICONS[type]}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-[14px] font-semibold">{SERVICE_LABELS[type]}</span>
+          <span
+            className={`text-[11px] font-semibold uppercase tracking-wide ${
+              isOffering ? "text-green-600" : "text-blue-600"
+            }`}
+          >
+            · {isOffering ? "Offering" : "Looking"}
+          </span>
+        </div>
+        {entry.details && (
+          <p className="text-[13px] text-text-muted mt-0.5">{entry.details}</p>
+        )}
       </div>
-      {entry.details && (
-        <p className="text-[13px] text-text-muted mt-0.5">{entry.details}</p>
-      )}
     </div>
   );
 }
