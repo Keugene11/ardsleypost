@@ -21,6 +21,7 @@ export function Feed({
   userFullName: string | null;
 }) {
   const router = useRouter();
+  const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [search, setSearch] = useState("");
   const [userResults, setUserResults] = useState<
     { id: string; full_name: string; avatar_url: string | null }[]
@@ -34,6 +35,11 @@ export function Feed({
   const [posting, setPosting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Sync local state when server data updates via router.refresh()
+  useEffect(() => {
+    setPosts(initialPosts);
+  }, [initialPosts]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -70,15 +76,49 @@ export function Feed({
       }
     }
 
-    const { error } = await supabase.from("posts").insert({
-      author_id: user.id,
-      content: content.trim(),
-      image_url: imageUrl,
-    });
+    const postContent = content.trim();
+    const { data: insertedPost, error } = await supabase
+      .from("posts")
+      .insert({
+        author_id: user.id,
+        content: postContent,
+        image_url: imageUrl,
+      })
+      .select("id, created_at")
+      .single();
 
-    if (!error) {
+    if (!error && insertedPost) {
+      // Optimistically prepend the new post so it appears instantly
+      const optimisticPost: Post = {
+        id: insertedPost.id,
+        author_id: user.id,
+        content: postContent,
+        image_url: imageUrl,
+        category: "general",
+        price: null,
+        created_at: insertedPost.created_at,
+        updated_at: insertedPost.created_at,
+        author: {
+          id: user.id,
+          full_name: userFullName || "",
+          avatar_url: userAvatarUrl || null,
+          email: "",
+          bio: null,
+          role: null,
+          services: null,
+          stripe_account_id: null,
+          stripe_onboarded: false,
+          created_at: "",
+        },
+        like_count: 0,
+        comment_count: 0,
+        user_has_liked: false,
+        recent_comments: [],
+      };
+      setPosts((prev) => [optimisticPost, ...prev]);
       setContent("");
       removeImage();
+      // Sync with server in the background
       router.refresh();
     }
     setPosting(false);
@@ -121,7 +161,7 @@ export function Feed({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filtered = initialPosts.filter((p) => {
+  const filtered = posts.filter((p) => {
     if (!search) return true;
     const q = search.toLowerCase();
     return (

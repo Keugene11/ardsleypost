@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { Feed } from "@/components/feed";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const supabase = await createClient();
   const {
