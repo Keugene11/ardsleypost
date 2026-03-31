@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [demoLoading, setDemoLoading] = useState(false);
+  const [demo2Loading, setDemo2Loading] = useState(false);
   const [tapCount, setTapCount] = useState(0);
   const showDemo = tapCount >= 5;
 
@@ -18,21 +19,21 @@ export default function LoginPage() {
     });
   };
 
-  const handleDemoLogin = async () => {
-    setDemoLoading(true);
+  const handleDemoLogin = async (endpoint: string, setLoading: (v: boolean) => void) => {
+    setLoading(true);
     try {
-      const res = await fetch("/api/demo-login", { method: "POST" });
-      if (!res.ok) { setDemoLoading(false); return; }
+      const res = await fetch(endpoint, { method: "POST" });
+      if (!res.ok) { setLoading(false); return; }
       const { access_token, refresh_token } = await res.json();
       if (access_token && refresh_token) {
         const supabase = createClient();
         await supabase.auth.setSession({ access_token, refresh_token });
         window.location.href = "/";
       } else {
-        setDemoLoading(false);
+        setLoading(false);
       }
     } catch {
-      setDemoLoading(false);
+      setLoading(false);
     }
   };
 
@@ -77,13 +78,22 @@ export default function LoginPage() {
         </button>
 
         {showDemo && (
-          <button
-            onClick={handleDemoLogin}
-            disabled={demoLoading}
-            className="w-full mt-3 flex items-center justify-center gap-2 bg-bg-input text-text py-3.5 rounded-2xl font-semibold press text-[14px]"
-          >
-            {demoLoading ? "Signing in..." : "Demo Login"}
-          </button>
+          <div className="mt-3 flex gap-2">
+            <button
+              onClick={() => handleDemoLogin("/api/demo-login", setDemoLoading)}
+              disabled={demoLoading || demo2Loading}
+              className="flex-1 flex items-center justify-center gap-2 bg-bg-input text-text py-3.5 rounded-2xl font-semibold press text-[14px]"
+            >
+              {demoLoading ? "Signing in..." : "Demo User 1"}
+            </button>
+            <button
+              onClick={() => handleDemoLogin("/api/demo-login2", setDemo2Loading)}
+              disabled={demoLoading || demo2Loading}
+              className="flex-1 flex items-center justify-center gap-2 bg-bg-input text-text py-3.5 rounded-2xl font-semibold press text-[14px]"
+            >
+              {demo2Loading ? "Signing in..." : "Demo User 2"}
+            </button>
+          </div>
         )}
       </div>
     </div>
