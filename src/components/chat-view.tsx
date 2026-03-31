@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { timeAgo } from "@/lib/utils";
@@ -26,37 +26,16 @@ export function ChatView({
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
-  const [keyboardOffset, setKeyboardOffset] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
-
-  // Handle mobile keyboard resize
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    const onResize = () => {
-      const offset = window.innerHeight - vv.height;
-      setKeyboardOffset(offset);
-      // Scroll to bottom when keyboard opens
-      setTimeout(scrollToBottom, 50);
-    };
-
-    vv.addEventListener("resize", onResize);
-    vv.addEventListener("scroll", onResize);
-    return () => {
-      vv.removeEventListener("resize", onResize);
-      vv.removeEventListener("scroll", onResize);
-    };
-  }, [scrollToBottom]);
+  }, [messages]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -114,8 +93,12 @@ export function ChatView({
   };
 
   return (
-    <div className="flex flex-col" style={{ height: `calc(100dvh - 180px - ${keyboardOffset}px)` }}>
-      <div className="flex-1 space-y-1.5 overflow-y-auto px-1 pb-4">
+    <>
+      <div
+        ref={scrollRef}
+        className="space-y-1.5 overflow-y-auto px-1 pb-20"
+        style={{ height: "calc(100dvh - 180px)" }}
+      >
         {messages.length === 0 && (
           <p className="text-center text-text-muted text-[14px] py-12">
             Start the conversation
@@ -150,28 +133,27 @@ export function ChatView({
         <div ref={bottomRef} />
       </div>
 
-      <form
-        ref={formRef}
-        onSubmit={handleSend}
-        className="flex gap-2 pt-3 border-t border-border shrink-0"
-      >
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          placeholder="Message..."
-          maxLength={5000}
-          enterKeyHint="send"
-          className="flex-1 bg-bg-input rounded-full pl-4 pr-4 py-2.5 text-[14px] placeholder:text-text-muted/50 outline-none focus:ring-1 focus:ring-text-muted/30 transition-all"
-        />
-        <button
-          type="submit"
-          disabled={!newMessage.trim() || sending}
-          className="bg-[#1a1a1a] text-white p-3 rounded-full press disabled:opacity-30"
-        >
-          <Send size={18} strokeWidth={1.5} />
-        </button>
-      </form>
-    </div>
+      <div className="fixed bottom-0 left-0 right-0 bg-bg z-50 border-t border-border pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <form onSubmit={handleSend} className="max-w-md md:max-w-2xl mx-auto flex gap-2 px-5 pt-2">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onFocus={() => setTimeout(scrollToBottom, 300)}
+            placeholder="Message..."
+            maxLength={5000}
+            enterKeyHint="send"
+            className="flex-1 bg-bg-input rounded-full pl-4 pr-4 py-2.5 text-[14px] placeholder:text-text-muted/50 outline-none focus:ring-1 focus:ring-text-muted/30 transition-all"
+          />
+          <button
+            type="submit"
+            disabled={!newMessage.trim() || sending}
+            className="bg-[#1a1a1a] text-white p-3 rounded-full press disabled:opacity-30"
+          >
+            <Send size={18} strokeWidth={1.5} />
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
