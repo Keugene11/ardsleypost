@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
 import { CommentSection } from "@/components/comment-section";
 import { DeletePostButton } from "@/components/delete-post-button";
+import { EditPostContent } from "@/components/edit-post-content";
 
 export default async function PostPage({
   params,
@@ -83,9 +84,13 @@ export default async function PostPage({
         </div>
       </div>
 
-      <p className="text-[16px] leading-relaxed whitespace-pre-wrap mb-4">
-        {post.content}
-      </p>
+      {user && user.id === post.author_id ? (
+        <EditPostContent postId={id} initialContent={post.content} />
+      ) : (
+        <p className="text-[16px] leading-relaxed whitespace-pre-wrap mb-4">
+          {post.content}
+        </p>
+      )}
 
       {post.image_url && (
         <div className="mb-4 rounded-xl overflow-hidden">

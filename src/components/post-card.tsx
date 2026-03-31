@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Heart, MessageCircle, Send, Trash2, Flag } from "lucide-react";
+import { Heart, MessageCircle, Send, Trash2, Flag, Pencil, Check, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { Post } from "@/types";
 import { timeAgo } from "@/lib/utils";
@@ -22,6 +22,10 @@ export function PostCard({
   const [deleted, setDeleted] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
+  const [displayContent, setDisplayContent] = useState(post.content);
+  const [saving, setSaving] = useState(false);
   const router = useRouter();
 
   const handleDelete = async (e: React.MouseEvent) => {
@@ -71,6 +75,37 @@ export function PostCard({
     }
   };
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditContent(displayContent);
+    setEditing(true);
+  };
+
+  const handleSaveEdit = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!editContent.trim() || editContent.length > 5000 || saving) return;
+    setSaving(true);
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("posts")
+      .update({ content: editContent.trim() })
+      .eq("id", post.id)
+      .eq("author_id", userId);
+    if (!error) {
+      setDisplayContent(editContent.trim());
+      setEditing(false);
+    }
+    setSaving(false);
+  };
+
+  const handleCancelEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditing(false);
+  };
+
   return (
     <>
     <Link href={`/post/${post.id}`}>
@@ -111,9 +146,43 @@ export function PostCard({
             </span>
           </div>
 
-          <p className="text-[14px] leading-relaxed mt-0.5 whitespace-pre-wrap">
-            {post.content}
-          </p>
+          {editing ? (
+            <div className="mt-1" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                className="w-full bg-bg-input border border-border rounded-xl px-3 py-2 text-[14px] leading-relaxed outline-none focus:border-text-muted transition-colors resize-none min-h-[60px]"
+                autoFocus
+                rows={3}
+              />
+              <div className="flex items-center gap-2 mt-1.5">
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={!editContent.trim() || editContent.length > 5000 || saving}
+                  className="flex items-center gap-1 text-[12px] font-semibold text-green-600 press disabled:opacity-30"
+                >
+                  <Check size={14} strokeWidth={2} />
+                  {saving ? "Saving..." : "Save"}
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  className="flex items-center gap-1 text-[12px] text-text-muted press"
+                >
+                  <X size={14} strokeWidth={1.5} />
+                  Cancel
+                </button>
+                {editContent.length > 4500 && (
+                  <span className={`text-[11px] ml-auto ${editContent.length > 5000 ? "text-red-500 font-semibold" : "text-text-muted"}`}>
+                    {editContent.length}/5000
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-[14px] leading-relaxed mt-0.5 whitespace-pre-wrap">
+              {displayContent}
+            </p>
+          )}
 
           {post.image_url && (
             <div className="mt-2.5 rounded-xl overflow-hidden">
@@ -166,7 +235,7 @@ export function PostCard({
                 </Link>
               </span>
             )}
-            {userId && userId === post.author_id && (
+            {userId && userId === post.author_id && !editing && (
               confirmingDelete ? (
                 <span className="flex items-center gap-2 ml-auto">
                   <button
@@ -183,12 +252,20 @@ export function PostCard({
                   </button>
                 </span>
               ) : (
-                <button
-                  onClick={handleDelete}
-                  className="flex items-center gap-1 text-[13px] text-text-muted hover:text-red-500 press ml-auto"
-                >
-                  <Trash2 size={14} strokeWidth={1.5} />
-                </button>
+                <span className="flex items-center gap-2 ml-auto">
+                  <button
+                    onClick={handleEdit}
+                    className="flex items-center gap-1 text-[13px] text-text-muted hover:text-text press"
+                  >
+                    <Pencil size={14} strokeWidth={1.5} />
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="flex items-center gap-1 text-[13px] text-text-muted hover:text-red-500 press"
+                  >
+                    <Trash2 size={14} strokeWidth={1.5} />
+                  </button>
+                </span>
               )
             )}
           </div>

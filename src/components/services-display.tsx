@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { Services, ServiceType, ServiceEntry } from "@/types";
 import { SERVICE_TYPES, SERVICE_LABELS, SERVICE_ICONS } from "@/types";
 
@@ -30,6 +33,9 @@ export function ServicesDisplay({ services, paused }: { services: Services; paus
 
 function ServiceBadge({ type, entry }: { type: ServiceType; entry: ServiceEntry }) {
   const isOffering = entry.mode === "offering";
+  const [expanded, setExpanded] = useState(false);
+  const isLong = (entry.details?.length || 0) > 80;
+
   return (
     <div
       className={`rounded-2xl px-4 py-3 flex items-start gap-3 ${
@@ -51,7 +57,19 @@ function ServiceBadge({ type, entry }: { type: ServiceType; entry: ServiceEntry 
           </span>
         </div>
         {entry.details && (
-          <p className="text-[13px] text-text-muted mt-0.5">{entry.details}</p>
+          <div className="mt-0.5">
+            <p className={`text-[13px] text-text-muted ${!expanded && isLong ? "line-clamp-2" : ""}`}>
+              {entry.details}
+            </p>
+            {isLong && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="text-[12px] font-medium text-text-muted/70 hover:text-text-muted mt-0.5 press"
+              >
+                {expanded ? "Show less" : "Show more"}
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
