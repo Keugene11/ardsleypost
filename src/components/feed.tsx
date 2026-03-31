@@ -8,6 +8,7 @@ import Image from "next/image";
 import type { Post } from "@/types";
 import { PostCard } from "./post-card";
 import { createClient } from "@/lib/supabase/client";
+import { LoginModal } from "./login-modal";
 
 export function Feed({
   initialPosts,
@@ -35,6 +36,7 @@ export function Feed({
   const [posting, setPosting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [showLogin, setShowLogin] = useState(false);
 
   // Sync local state when server data updates via router.refresh()
   useEffect(() => {
@@ -172,6 +174,17 @@ export function Feed({
 
   return (
     <div>
+      {!userId && (
+        <>
+          <button
+            onClick={() => setShowLogin(true)}
+            className="w-full bg-[#1a1a1a] text-white py-3.5 rounded-full font-semibold press text-[15px] mb-4"
+          >
+            Sign in or create account
+          </button>
+          {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+        </>
+      )}
       {userId && (
         <div className="border-b border-border pb-3 mb-1">
           <div className="flex gap-3">

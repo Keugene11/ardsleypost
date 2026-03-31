@@ -81,17 +81,33 @@ export default async function HomePage() {
   return (
     <>
       <header className="mb-5">
-        <div className="flex items-baseline justify-between">
-          <h1 className="text-[26px] font-extrabold tracking-tight">Ardsleypost</h1>
-          {userCount !== null && userCount > 0 && (
-            <span className="text-[12px] text-text-muted font-medium">
-              {userCount} {userCount === 1 ? "member" : "members"}
-            </span>
-          )}
-        </div>
-        <p className="text-[13px] text-text-muted mt-1 leading-snug">
-          The social network built for Ardsley students, parents, and alumni.
-        </p>
+        {user ? (
+          <>
+            <div className="flex items-baseline justify-between">
+              <h1 className="text-[26px] font-extrabold tracking-tight">Ardsleypost</h1>
+              {userCount !== null && userCount > 0 && (
+                <span className="text-[12px] text-text-muted font-medium">
+                  {userCount} {userCount === 1 ? "member" : "members"}
+                </span>
+              )}
+            </div>
+            <p className="text-[13px] text-text-muted mt-1 leading-snug">
+              The social network built for Ardsley students, parents, and alumni.
+            </p>
+          </>
+        ) : (
+          <div className="text-center py-4">
+            <h1 className="text-[34px] font-extrabold tracking-tight">Ardsleypost</h1>
+            <p className="text-[17px] text-text-muted mt-2 leading-snug">
+              The social network built for Ardsley students, parents, and alumni.
+            </p>
+            {userCount !== null && userCount > 0 && (
+              <p className="text-[13px] text-text-muted mt-2 font-medium">
+                {userCount} {userCount === 1 ? "member has" : "members have"} joined
+              </p>
+            )}
+          </div>
+        )}
       </header>
       <Feed
         initialPosts={formattedPosts}
