@@ -58,6 +58,9 @@ export function AccountActions() {
           <Link href="/privacy" className="text-[12px] text-text-muted/60 press">
             Privacy
           </Link>
+          <a href="mailto:keugenelee11@gmail.com" className="text-[12px] text-text-muted/60 press">
+            Support
+          </a>
         </div>
         <button
           onClick={handleSignOut}
