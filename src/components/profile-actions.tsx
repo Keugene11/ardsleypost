@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
-import { Camera, Check, X, Pencil } from "lucide-react";
+import { Camera, Check, X, Pencil, ChevronDown } from "lucide-react";
 import { ROLE_OPTIONS, ROLE_LABELS } from "@/types";
 import type { UserRole } from "@/types";
 
@@ -37,6 +37,7 @@ export function ProfileActions({
   const [toast, setToast] = useState<string | null>(null);
   const [roleValue, setRoleValue] = useState<UserRole | null>(role);
   const [savingRole, setSavingRole] = useState(false);
+  const [roleOpen, setRoleOpen] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -220,20 +221,47 @@ export function ProfileActions({
         </div>
       </div>
 
-      {/* Role selector — compact dropdown */}
-      <div className="mb-5 flex items-center gap-2">
-        <select
-          value={roleValue || ""}
-          onChange={(e) => handleRoleChange(e.target.value as UserRole)}
+      {/* Role selector */}
+      <div className="mb-5 relative">
+        <button
+          type="button"
+          onClick={() => setRoleOpen(!roleOpen)}
           disabled={savingRole}
-          className="bg-bg-input border border-border rounded-full px-4 py-2 text-[13px] font-semibold text-text outline-none press appearance-none cursor-pointer pr-8"
-          style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 12px center" }}
+          className="flex items-center gap-2 bg-bg-input border border-border rounded-full px-4 py-2.5 press cursor-pointer"
         >
-          <option value="" disabled>I am a...</option>
-          {ROLE_OPTIONS.map((r) => (
-            <option key={r} value={r}>{ROLE_LABELS[r]}</option>
-          ))}
-        </select>
+          <span className="text-[13px] font-semibold text-text">
+            {roleValue ? ROLE_LABELS[roleValue] : "I am a..."}
+          </span>
+          <ChevronDown
+            size={14}
+            strokeWidth={2}
+            className={`text-text-muted transition-transform duration-200 ${roleOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+        {roleOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setRoleOpen(false)} />
+            <div className="absolute top-full left-0 mt-2 bg-bg-card border border-border rounded-2xl shadow-lg z-50 overflow-hidden animate-fade-in min-w-[160px]">
+              {ROLE_OPTIONS.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => {
+                    handleRoleChange(r);
+                    setRoleOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 text-[14px] font-medium press transition-colors ${
+                    roleValue === r
+                      ? "bg-[#1a1a1a] text-white"
+                      : "text-text hover:bg-bg-input"
+                  }`}
+                >
+                  {ROLE_LABELS[r]}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Bio — always visible, tap to edit */}
