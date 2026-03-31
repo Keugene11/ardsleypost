@@ -88,8 +88,8 @@ export function ChatView({
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="space-y-1.5 mb-4 max-h-[60vh] overflow-y-auto px-1">
+    <div className="flex flex-col" style={{ height: "calc(100vh - 180px)" }}>
+      <div className="flex-1 space-y-1.5 overflow-y-auto px-1 pb-4">
         {messages.length === 0 && (
           <p className="text-center text-text-muted text-[14px] py-12">
             Start the conversation
@@ -124,7 +124,7 @@ export function ChatView({
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSend} className="flex gap-2">
+      <form onSubmit={handleSend} className="flex gap-2 pt-3 border-t border-border">
         <input
           type="text"
           value={newMessage}
