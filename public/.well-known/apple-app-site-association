@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "SDA728W6D9.com.ardsleypost.app",
+        "paths": ["/auth/callback"]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["SDA728W6D9.com.ardsleypost.app"]
+  }
+}
