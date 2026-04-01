@@ -79,6 +79,7 @@ jobs:
             -scheme App \
             -archivePath $RUNNER_TEMP/Ardsleypost.xcarchive \
             -destination "generic/platform=iOS" \
+            CODE_SIGN_STYLE=Automatic \
             -allowProvisioningUpdates \
             -authenticationKeyPath ~/.private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8 \
             -authenticationKeyID "$APP_STORE_CONNECT_API_KEY_ID" \
