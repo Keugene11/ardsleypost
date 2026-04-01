@@ -36,7 +36,8 @@ export async function nativeOAuthSignIn(provider: "google" | "apple") {
   const { Browser } = await import("@capacitor/browser");
   await Browser.open({
     url: data.url,
-    presentationStyle: "popover",
+    presentationStyle: "fullscreen",
+    windowName: "_self",
   });
 }
 
