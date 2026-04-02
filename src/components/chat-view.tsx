@@ -96,7 +96,7 @@ export function ChatView({
     <>
       <div
         ref={scrollRef}
-        className="space-y-1.5 pb-20"
+        className="flex-1 min-h-0 overflow-y-auto space-y-1.5 px-5 py-4"
       >
         {messages.length === 0 && (
           <p className="text-center text-text-muted text-[14px] py-12">
@@ -143,7 +143,7 @@ export function ChatView({
         <div ref={bottomRef} />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-bg border-t border-border pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] px-5 z-50">
+      <div className="shrink-0 border-t border-border pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] px-5">
         <form onSubmit={handleSend} className="max-w-md md:max-w-2xl mx-auto flex gap-2">
           <input
             type="text"
