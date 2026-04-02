@@ -7,6 +7,7 @@ import { Heart, Send, Eye } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { timeAgo } from "@/lib/utils";
 import type { Comment } from "@/types";
+import { LikesModal } from "./likes-modal";
 
 export function CommentSection({
   postId,
@@ -28,6 +29,7 @@ export function CommentSection({
   const [submitting, setSubmitting] = useState(false);
   const [liked, setLiked] = useState(initialHasLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
+  const [showLikes, setShowLikes] = useState(false);
 
   // Record impression on mount
   useEffect(() => {
@@ -86,19 +88,25 @@ export function CommentSection({
   return (
     <div>
       <div className="flex items-center gap-5 mb-4">
-        <button
-          onClick={handleLike}
-          className={`flex items-center gap-1.5 text-[13px] font-medium press ${
+        <span className={`flex items-center gap-1.5 text-[13px] font-medium ${
             liked ? "text-red-500" : "text-text-muted"
-          }`}
-        >
-          <Heart
-            size={16}
-            fill={liked ? "currentColor" : "none"}
-            strokeWidth={1.5}
-          />
-          {likeCount > 0 && likeCount}
-        </button>
+          }`}>
+          <button
+            onClick={handleLike}
+            className="press"
+          >
+            <Heart
+              size={16}
+              fill={liked ? "currentColor" : "none"}
+              strokeWidth={1.5}
+            />
+          </button>
+          {likeCount > 0 && (
+            <button onClick={() => setShowLikes(true)} className="press">
+              {likeCount}
+            </button>
+          )}
+        </span>
         <span className="text-[13px] text-text-muted">
           {comments.length} {comments.length === 1 ? "reply" : "replies"}
         </span>
@@ -171,6 +179,12 @@ export function CommentSection({
             <Send size={18} strokeWidth={1.5} />
           </button>
         </form>
+      )}
+      {showLikes && (
+        <LikesModal
+          postId={postId}
+          onClose={() => setShowLikes(false)}
+        />
       )}
     </div>
   );

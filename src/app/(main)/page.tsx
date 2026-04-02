@@ -48,6 +48,20 @@ export default async function HomePage() {
 
   const postIds = (posts || []).map((p) => p.id);
 
+  // Fetch impression counts per post
+  const impressionCountMap = new Map<string, number>();
+  if (postIds.length) {
+    const { data: impressionRows } = await supabase
+      .from("post_impressions")
+      .select("post_id")
+      .in("post_id", postIds);
+    if (impressionRows) {
+      for (const row of impressionRows) {
+        impressionCountMap.set(row.post_id, (impressionCountMap.get(row.post_id) || 0) + 1);
+      }
+    }
+  }
+
   // Fetch recent comments (depends on posts result)
   const { data: recentComments } = postIds.length
     ? await supabase
@@ -74,7 +88,7 @@ export default async function HomePage() {
       ...post,
       like_count: post.like_count?.[0]?.count || 0,
       comment_count: post.comment_count?.[0]?.count || 0,
-      impression_count: 0,
+      impression_count: impressionCountMap.get(post.id) || 0,
       user_has_liked: likedPostIds.has(post.id),
       recent_comments: (commentsByPost.get(post.id) || []).reverse(),
     }));

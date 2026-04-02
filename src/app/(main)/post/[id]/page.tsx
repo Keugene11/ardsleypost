@@ -38,7 +38,10 @@ export default async function PostPage({
     .from("likes")
     .select("*", { count: "exact", head: true })
     .eq("post_id", id);
-  const impressionCount = 0;
+  const { count: impressionCount } = await supabase
+    .from("post_impressions")
+    .select("*", { count: "exact", head: true })
+    .eq("post_id", id);
 
   let userHasLiked = false;
   if (user) {

@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { Post } from "@/types";
 import { timeAgo } from "@/lib/utils";
 import { ReportModal } from "./report-modal";
+import { LikesModal } from "./likes-modal";
 
 export function PostCard({
   post,
@@ -40,6 +41,7 @@ export function PostCard({
   const [deleted, setDeleted] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [showLikes, setShowLikes] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const [displayContent, setDisplayContent] = useState(post.content);
@@ -211,19 +213,25 @@ export function PostCard({
           )}
 
           <div className="flex items-center gap-5 mt-2.5">
-            <button
-              onClick={handleLike}
-              className={`flex items-center gap-1 text-[13px] press ${
+            <span className={`flex items-center gap-1 text-[13px] ${
                 liked ? "text-red-500" : "text-text-muted"
-              }`}
-            >
-              <Heart
-                size={15}
-                fill={liked ? "currentColor" : "none"}
-                strokeWidth={1.5}
-              />
-              {likeCount > 0 && likeCount}
-            </button>
+              }`}>
+              <button
+                onClick={handleLike}
+                className="press"
+              >
+                <Heart
+                  size={15}
+                  fill={liked ? "currentColor" : "none"}
+                  strokeWidth={1.5}
+                />
+              </button>
+              {likeCount > 0 && (
+                <button onClick={() => setShowLikes(true)} className="press">
+                  {likeCount}
+                </button>
+              )}
+            </span>
             <span className="flex items-center gap-1 text-[13px] text-text-muted">
               <MessageCircle size={15} strokeWidth={1.5} />
               {post.comment_count > 0 && post.comment_count}
@@ -336,6 +344,12 @@ export function PostCard({
         type="post"
         targetId={post.id}
         onClose={() => setShowReport(false)}
+      />
+    )}
+    {showLikes && (
+      <LikesModal
+        postId={post.id}
+        onClose={() => setShowLikes(false)}
       />
     )}
     </>
