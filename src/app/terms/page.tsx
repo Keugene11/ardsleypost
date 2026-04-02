@@ -9,7 +9,7 @@ export default function TermsOfService() {
         </h1>
         <div className="text-[14px] leading-relaxed text-text-muted space-y-4">
           <p>
-            <strong className="text-text">Last updated:</strong> March 30, 2026
+            <strong className="text-text">Last updated:</strong> April 2, 2026
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
@@ -42,13 +42,20 @@ export default function TermsOfService() {
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            4. User Conduct
+            4. User Conduct &amp; Zero Tolerance Policy
           </h2>
-          <p>You agree not to:</p>
+          <p>
+            Ardsleypost has a <strong className="text-text">zero tolerance policy for objectionable content and abusive users</strong>.
+            You agree not to:
+          </p>
           <ul className="list-disc list-inside space-y-1">
             <li>Harass, bully, or threaten other users</li>
             <li>
               Post hate speech, discriminatory content, or slurs of any kind
+            </li>
+            <li>
+              Post, share, or transmit content that is offensive, sexually
+              explicit, violent, or otherwise objectionable
             </li>
             <li>Spam, solicit, or send unsolicited promotions</li>
             <li>Impersonate another person or entity</li>
@@ -63,12 +70,22 @@ export default function TermsOfService() {
             </li>
           </ul>
           <p>
-            Violation of these rules may result in immediate account suspension
-            or termination.
+            Violation of these rules may result in content removal, temporary
+            suspension, or permanent account termination without notice.
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            5. Content
+            5. Reporting &amp; Blocking
+          </h2>
+          <p>
+            Users can report objectionable content or abusive behavior using the
+            in-app report feature. All reports are reviewed and acted upon
+            promptly. Users may also block other users to prevent unwanted
+            contact and to hide their content from the feed.
+          </p>
+
+          <h2 className="text-[16px] font-semibold text-text pt-2">
+            6. Content
           </h2>
           <p>
             You retain ownership of the content you post on Ardsleypost. By
@@ -79,7 +96,7 @@ export default function TermsOfService() {
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            6. Services Marketplace
+            7. Services Marketplace
           </h2>
           <p>
             Ardsleypost allows users to offer and book services including
@@ -92,7 +109,7 @@ export default function TermsOfService() {
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            7. Privacy
+            8. Privacy
           </h2>
           <p>
             Your use of Ardsleypost is also governed by our{" "}
@@ -106,7 +123,7 @@ export default function TermsOfService() {
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            8. Termination
+            9. Termination
           </h2>
           <p>
             We may suspend or terminate your account at any time if you violate
@@ -115,7 +132,7 @@ export default function TermsOfService() {
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            9. Disclaimers
+            10. Disclaimers
           </h2>
           <p>
             Ardsleypost is provided &ldquo;as is&rdquo; and &ldquo;as
@@ -125,7 +142,7 @@ export default function TermsOfService() {
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            10. Limitation of Liability
+            11. Limitation of Liability
           </h2>
           <p>
             To the fullest extent permitted by law, Ardsleypost and its
@@ -136,7 +153,7 @@ export default function TermsOfService() {
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            11. Changes to Terms
+            12. Changes to Terms
           </h2>
           <p>
             We may update these terms from time to time. Continued use of
@@ -146,7 +163,7 @@ export default function TermsOfService() {
           </p>
 
           <h2 className="text-[16px] font-semibold text-text pt-2">
-            12. Contact
+            13. Contact
           </h2>
           <p>
             If you have questions about these terms, contact us at{" "}

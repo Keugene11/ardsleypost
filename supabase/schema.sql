@@ -16,6 +16,7 @@ create table public.profiles (
   stripe_account_id text,
   stripe_onboarded boolean default false,
   is_premium boolean default false,
+  accepted_terms boolean default false not null,
   created_at timestamptz default now() not null
 );
 
