@@ -154,6 +154,15 @@ export function ServicesEditor({
                   >
                     Looking
                   </button>
+                  {entry && (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleMode(type, entry.mode)}
+                      className="px-3 py-2 rounded-xl text-[13px] font-semibold press transition-all bg-bg-input text-red-500 hover:bg-red-50"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
                 {entry && (
                   <textarea
