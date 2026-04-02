@@ -93,10 +93,10 @@ export function ChatView({
   };
 
   return (
-    <div className="flex flex-col" style={{ height: "calc(100dvh - 180px)" }}>
+    <div className="flex flex-col flex-1 min-h-0">
       <div
         ref={scrollRef}
-        className="flex-1 space-y-1.5 overflow-y-auto px-1 pb-4"
+        className="flex-1 space-y-1.5 overflow-y-auto px-5 pb-4"
       >
         {messages.length === 0 && (
           <p className="text-center text-text-muted text-[14px] py-12">
@@ -143,8 +143,8 @@ export function ChatView({
         <div ref={bottomRef} />
       </div>
 
-      <div className="shrink-0 border-t border-border pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-        <form onSubmit={handleSend} className="flex gap-2">
+      <div className="shrink-0 border-t border-border pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] px-5">
+        <form onSubmit={handleSend} className="max-w-md md:max-w-2xl mx-auto flex gap-2">
           <input
             type="text"
             value={newMessage}
