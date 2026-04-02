@@ -10,8 +10,9 @@ const config: CapacitorConfig = {
     cleartext: false,
   },
   ios: {
-    contentInset: "automatic",
+    contentInset: "always",
     scheme: "Ardsleypost",
+    allowsLinkPreview: false,
   },
   android: {
     backgroundColor: "#fafafa",

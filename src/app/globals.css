@@ -18,6 +18,10 @@
   --color-nav: #1a1a1a;
 }
 
+html, body {
+  overscroll-behavior: none;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--color-bg);
