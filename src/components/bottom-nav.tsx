@@ -12,6 +12,9 @@ export function BottomNav({ isLoggedIn }: { isLoggedIn: boolean }) {
 
   const handleAuthRequired = () => setShowLogin(true);
 
+  // Hide nav on individual chat pages — the chat input takes over the bottom
+  if (pathname.match(/^\/messages\/.+/)) return null;
+
   return (
     <>
       <nav className="fixed bottom-0 left-0 right-0 bg-bg/80 backdrop-blur-lg border-t border-border/50 z-50">
