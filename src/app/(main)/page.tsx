@@ -99,7 +99,7 @@ export default async function HomePage() {
         {user ? (
           <>
             <div className="flex items-baseline justify-between">
-              <h1 className="text-[26px] font-extrabold tracking-tight">Ardsleypost</h1>
+              <h1 className="text-[26px] font-bold tracking-tight">Ardsleypost</h1>
               {userCount !== null && userCount > 0 && (
                 <span className="text-[12px] text-text-muted font-medium">
                   {userCount} {userCount === 1 ? "member" : "members"}
@@ -112,7 +112,7 @@ export default async function HomePage() {
           </>
         ) : (
           <div className="text-center py-4">
-            <h1 className="text-[34px] font-extrabold tracking-tight">Ardsleypost</h1>
+            <h1 className="text-[34px] font-bold tracking-tight">Ardsleypost</h1>
             <p className="text-[17px] text-text-muted mt-2 leading-snug">
               The social network built for Ardsley students, parents, and alumni.
             </p>
