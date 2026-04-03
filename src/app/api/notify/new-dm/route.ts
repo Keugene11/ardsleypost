@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
   const { message_id, sender_name, receiver_name, content } = await req.json();
   const preview = content?.slice(0, 200) || "(no content)";
   const secret = process.env.ADMIN_ACTION_SECRET;
+  const approveUrl = `${BASE_URL}/api/admin/email-action?secret=${secret}&action=approve&type=dm&id=${message_id}`;
   const rejectUrl = `${BASE_URL}/api/admin/email-action?secret=${secret}&action=reject&type=dm&id=${message_id}`;
 
   try {
@@ -28,8 +29,12 @@ export async function POST(req: NextRequest) {
           ${preview}
         </blockquote>
         <div style="margin-top: 16px;">
+          <a href="${approveUrl}" style="display: inline-block; padding: 10px 24px; background: #1a1a1a; color: #fff; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 600;">
+            Approve
+          </a>
+          &nbsp;&nbsp;
           <a href="${rejectUrl}" style="display: inline-block; padding: 10px 24px; background: #fff; color: #dc2626; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: 600; border: 2px solid #dc2626;">
-            Delete Message
+            Reject
           </a>
         </div>
       </div>

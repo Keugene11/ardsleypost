@@ -12,6 +12,7 @@ interface ChatMessage {
   content: string;
   created_at: string;
   read: boolean;
+  is_approved: boolean;
 }
 
 export function ChatView({
@@ -55,7 +56,7 @@ export function ChatView({
         },
         (payload) => {
           const msg = payload.new as ChatMessage;
-          if (msg.receiver_id === currentUserId) {
+          if (msg.receiver_id === currentUserId && msg.is_approved) {
             setMessages((prev) => [...prev, msg]);
             supabase
               .from("messages")

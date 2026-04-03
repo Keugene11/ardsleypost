@@ -10,12 +10,21 @@ export default async function MessagesPage() {
 
   if (!user) redirect("/login");
 
+  const ADMIN_EMAILS = ["keugenelee11@gmail.com"];
+  const isAdmin = ADMIN_EMAILS.includes(user.email || "");
+
   // Get all messages where the user is sender or receiver
-  const { data: messages } = await supabase
+  let messagesQuery = supabase
     .from("messages")
     .select("*, sender:profiles!messages_sender_id_fkey(*), receiver:profiles!messages_receiver_id_fkey(*)")
     .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
     .order("created_at", { ascending: false });
+
+  if (!isAdmin) {
+    messagesQuery = messagesQuery.or(`is_approved.eq.true,sender_id.eq.${user.id}`);
+  }
+
+  const { data: messages } = await messagesQuery;
 
   // Group into conversations
   const conversationMap = new Map<

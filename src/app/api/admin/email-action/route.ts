@@ -42,7 +42,12 @@ export async function GET(req: NextRequest) {
       });
     }
   } else if (type === "dm") {
-    if (action === "reject") {
+    if (action === "approve") {
+      await admin.from("messages").update({ is_approved: true }).eq("id", id);
+      return new NextResponse(page("Message Approved", "The message is now visible to the recipient."), {
+        headers: { "Content-Type": "text/html" },
+      });
+    } else if (action === "reject") {
       await admin.from("messages").delete().eq("id", id);
       return new NextResponse(page("Message Deleted", "The DM has been removed."), {
         headers: { "Content-Type": "text/html" },

@@ -26,14 +26,24 @@ export default async function ChatPage({
 
   if (!otherUser) notFound();
 
+  const ADMIN_EMAILS = ["keugenelee11@gmail.com"];
+  const isAdmin = ADMIN_EMAILS.includes(user.email || "");
+
   // Get messages between the two users
-  const { data: messages } = await supabase
+  // Admins see all; regular users see approved messages + their own sent messages
+  let messagesQuery = supabase
     .from("messages")
     .select("*")
     .or(
       `and(sender_id.eq.${user.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${user.id})`
     )
     .order("created_at", { ascending: true });
+
+  if (!isAdmin) {
+    messagesQuery = messagesQuery.or(`is_approved.eq.true,sender_id.eq.${user.id}`);
+  }
+
+  const { data: messages } = await messagesQuery;
 
   // Mark unread messages as read
   await supabase
