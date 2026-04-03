@@ -53,13 +53,19 @@ export default function NewPostPage() {
       }
     }
 
-    const { error } = await supabase.from("posts").insert({
+    const { data: insertedPost, error } = await supabase.from("posts").insert({
       author_id: user.id,
       content: content.trim(),
       image_url: imageUrl,
-    });
+    }).select("id").single();
 
-    if (!error) {
+    if (!error && insertedPost) {
+      // Notify admin of new post (fire and forget)
+      fetch("/api/notify/new-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ post_id: insertedPost.id, content: content.trim() }),
+      }).catch(() => {});
       router.push("/");
       router.refresh();
     }

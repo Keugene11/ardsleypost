@@ -92,6 +92,12 @@ export function Feed({
       .single();
 
     if (!error && insertedPost) {
+      // Notify admin of new post (fire and forget)
+      fetch("/api/notify/new-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ post_id: insertedPost.id, content: postContent }),
+      }).catch(() => {});
       // Optimistically prepend the new post so it appears instantly
       const optimisticPost: Post = {
         id: insertedPost.id,
