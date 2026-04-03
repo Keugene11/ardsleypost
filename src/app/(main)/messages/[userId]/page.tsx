@@ -45,30 +45,32 @@ export default async function ChatPage({
 
   return (
     <div className="fixed inset-0 z-50 bg-bg flex flex-col">
-      <div className="shrink-0 flex items-center gap-3 px-5 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 border-b border-border">
-        <Link href="/messages" className="press">
-          <ArrowLeft size={20} strokeWidth={1.5} className="text-text-muted" />
-        </Link>
-        <Link href={`/user/${otherUserId}`} className="flex items-center gap-3 press">
-          {otherUser.avatar_url ? (
-            <div className="w-9 h-9 rounded-full overflow-hidden shrink-0">
-              <Image
-                src={otherUser.avatar_url}
-                alt={otherUser.full_name}
-                width={36}
-                height={36}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className="w-9 h-9 rounded-full bg-bg-input flex items-center justify-center text-[14px] font-semibold text-text-muted">
-              {otherUser.full_name?.[0] || "?"}
-            </div>
-          )}
-          <h1 className="text-[18px] font-bold tracking-tight">
-            {otherUser.full_name}
-          </h1>
-        </Link>
+      <div className="shrink-0 border-b border-border pt-[max(0.75rem,env(safe-area-inset-top))] pb-3">
+        <div className="max-w-md md:max-w-2xl mx-auto flex items-center gap-3 px-5">
+          <Link href="/messages" className="press">
+            <ArrowLeft size={20} strokeWidth={1.5} className="text-text-muted" />
+          </Link>
+          <Link href={`/user/${otherUserId}`} className="flex items-center gap-3 press">
+            {otherUser.avatar_url ? (
+              <div className="w-9 h-9 rounded-full overflow-hidden shrink-0">
+                <Image
+                  src={otherUser.avatar_url}
+                  alt={otherUser.full_name}
+                  width={36}
+                  height={36}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-bg-input flex items-center justify-center text-[14px] font-semibold text-text-muted">
+                {otherUser.full_name?.[0] || "?"}
+              </div>
+            )}
+            <h1 className="text-[18px] font-bold tracking-tight">
+              {otherUser.full_name}
+            </h1>
+          </Link>
+        </div>
       </div>
 
       <ChatView
