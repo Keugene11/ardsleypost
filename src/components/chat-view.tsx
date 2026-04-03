@@ -160,8 +160,8 @@ export function ChatView({
       </div>
       </div>
 
-      <div className="shrink-0 border-t border-border pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] px-5">
-        <form onSubmit={handleSend} className="max-w-md md:max-w-2xl mx-auto flex gap-2">
+      <div className="shrink-0 border-t border-border pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <form onSubmit={handleSend} className="max-w-md md:max-w-2xl mx-auto flex gap-2 px-5">
           <input
             type="text"
             value={newMessage}
