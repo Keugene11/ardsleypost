@@ -6,9 +6,12 @@ import { ArrowLeft, Send, Heart, MessageCircle } from "lucide-react";
 import { timeAgo } from "@/lib/utils";
 import { ServicesDisplay } from "@/components/services-display";
 import { UserActions } from "@/components/user-actions";
+import { BanButton } from "@/components/ban-button";
 import { ProfileViewTracker } from "@/components/profile-view-tracker";
 import type { Services, UserRole } from "@/types";
 import { ROLE_LABELS } from "@/types";
+
+const ADMIN_EMAILS = ["keugenelee11@gmail.com"];
 
 export default async function UserProfilePage({
   params,
@@ -23,6 +26,7 @@ export default async function UserProfilePage({
   } = await supabase.auth.getUser();
 
   const isOwnProfile = user?.id === id;
+  const isAdmin = ADMIN_EMAILS.includes(user?.email || "");
 
   const [{ data: profile }, { data: posts }, blockResult] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", id).single(),
@@ -115,6 +119,12 @@ export default async function UserProfilePage({
             </Link>
             <UserActions userId={id} isBlocked={isBlocked} />
           </>
+        )}
+
+        {isAdmin && !isOwnProfile && (
+          <div className="mt-3">
+            <BanButton userId={id} isBanned={!!profile.is_banned} />
+          </div>
         )}
 
         {isOwnProfile && (

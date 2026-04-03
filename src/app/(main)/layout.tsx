@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { BottomNav } from "@/components/bottom-nav";
 import { AcceptTermsModal } from "@/components/accept-terms-modal";
+import { BannedScreen } from "@/components/banned-screen";
 
 export default async function MainLayout({
   children,
@@ -13,13 +14,21 @@ export default async function MainLayout({
   } = await supabase.auth.getUser();
 
   let showTerms = false;
+  let isBanned = false;
+  let banReason: string | null = null;
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("accepted_terms")
+      .select("accepted_terms, is_banned, ban_reason")
       .eq("id", user.id)
       .single();
     showTerms = !profile?.accepted_terms;
+    isBanned = !!profile?.is_banned;
+    banReason = profile?.ban_reason || null;
+  }
+
+  if (isBanned) {
+    return <BannedScreen reason={banReason} />;
   }
 
   return (
