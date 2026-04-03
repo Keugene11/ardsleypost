@@ -3,7 +3,9 @@ import nodemailer from "nodemailer";
 const ADMIN_EMAIL = "keugenelee11@gmail.com";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: ADMIN_EMAIL,
     pass: process.env.GMAIL_APP_PASSWORD,
