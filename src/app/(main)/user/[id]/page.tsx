@@ -28,7 +28,7 @@ export default async function UserProfilePage({
   const isOwnProfile = user?.id === id;
   const isAdmin = ADMIN_EMAILS.includes(user?.email || "");
 
-  const postsQuery = supabase
+  let postsQuery = supabase
     .from("posts")
     .select(
       `
@@ -42,7 +42,7 @@ export default async function UserProfilePage({
 
   // Only show approved posts unless viewing own profile or admin
   if (!isOwnProfile && !isAdmin) {
-    postsQuery.eq("is_approved", true);
+    postsQuery = postsQuery.eq("is_approved", true);
   }
 
   const [{ data: profile }, { data: posts }, blockResult] = await Promise.all([

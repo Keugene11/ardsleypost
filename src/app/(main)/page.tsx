@@ -14,7 +14,7 @@ export default async function HomePage() {
 
   // Run all independent queries in parallel
   // Admins see all posts; regular users see approved posts + their own pending posts
-  const postsQuery = supabase
+  let postsQuery = supabase
     .from("posts")
     .select(
       `
@@ -29,9 +29,9 @@ export default async function HomePage() {
 
   if (!isAdmin) {
     if (user) {
-      postsQuery.or(`is_approved.eq.true,author_id.eq.${user.id}`);
+      postsQuery = postsQuery.or(`is_approved.eq.true,author_id.eq.${user.id}`);
     } else {
-      postsQuery.eq("is_approved", true);
+      postsQuery = postsQuery.eq("is_approved", true);
     }
   }
 
