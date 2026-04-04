@@ -1,4 +1,32 @@
 import { createClient } from "@/lib/supabase/client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+async function ensureProfileExists(supabase: SupabaseClient) {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: existing } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", user.id)
+      .single();
+
+    if (!existing) {
+      await supabase.from("profiles").insert({
+        id: user.id,
+        email: user.email,
+        full_name:
+          user.user_metadata?.full_name || user.user_metadata?.name || "",
+        avatar_url: user.user_metadata?.avatar_url || null,
+      });
+    }
+  } catch (err) {
+    console.error("Profile creation failed:", err);
+  }
+}
 
 /**
  * Check if running inside a Capacitor native app (iOS/Android)
@@ -47,6 +75,7 @@ export async function nativeOAuthSignIn(provider: "google" | "apple") {
         const code = callbackUrl.searchParams.get("code");
         if (code) {
           await supabase.auth.exchangeCodeForSession(code);
+          await ensureProfileExists(supabase);
           window.location.href = "/";
           return;
         }
@@ -87,6 +116,8 @@ export function initNativeAuthListener() {
             const { error } = await supabase.auth.exchangeCodeForSession(code);
             if (error) {
               console.error("Session exchange failed:", error);
+            } else {
+              await ensureProfileExists(supabase);
             }
           }
 
@@ -103,6 +134,7 @@ export function initNativeAuthListener() {
                 access_token: accessToken,
                 refresh_token: refreshToken,
               });
+              await ensureProfileExists(supabase);
             }
           }
         } catch (err) {
